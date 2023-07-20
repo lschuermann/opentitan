@@ -261,9 +261,9 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
     # address to the correct entry point.
     http_archive_or_local(
         name = "elf2tab",
-        local = elf2tab,
+        local = "../elf2tab",
         url = "https://github.com/cfrantz/elf2tab/archive/d1bf5e392cae54aa021070319a0eb0488d745efb.tar.gz",
         sha256 = "e2da2e32f81f6d45c827e65092069431e153a6661fe2d07beab3f37fe2e7c2cd",
         strip_prefix = "elf2tab-d1bf5e392cae54aa021070319a0eb0488d745efb",
-        build_file = Label("//third_party/tock:BUILD.elf2tab.bazel"),
+        build_file = "//third_party/tock:BUILD.elf2tab.bazel",
     )

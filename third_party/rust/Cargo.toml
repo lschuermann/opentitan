@@ -20,7 +20,7 @@ atty = "0.2"
 bitflags = { version = "2.1", features = ["serde"] }
 bitvec = "1.0.1"
 byteorder = "1.4.3"
-chrono = { version = "0.4", features = ["clock", "std"] }
+chrono = { version = "0.4.2", features = ["clock", "std"] }
 crc = "3.0"
 deser-hjson = "1.0.2"
 directories = "4.0.1"
@@ -59,7 +59,7 @@ serde_derive = "1.0"
 serde_bytes = "0.11"
 serde_json = "1.0.69"
 serialport = "4.2.0"
-sha2 = { version = "0.10", features = ["oid"] }
+sha2 = { version = "0.10.2", features = ["oid"] }
 shellwords = "1.1.0"
 structopt = "0.3"
 syn = "1.0"
@@ -69,7 +69,7 @@ typetag = "0.2"
 zerocopy = "0.5.0"
 
 # hsmtool dependencies
-clap = { version = "4.1", features = ["derive", "env", "color", "wrap_help"] }
+clap = { version = "4.0.7", features = ["derive", "env", "color", "wrap_help"] }
 cryptoki = "0.4.1"
 # Possible tagging/release error in the cryptoki crates. Pin to a version of
 # cryptoki-sys known to work.
@@ -101,8 +101,10 @@ pest_derive = "2.2"
 mdbook = "0.4.28"
 
 # elf2tab dependencies
-tar = "0.4"
-elf = "0.0.10"
+tar = "0.4.36"
+elf = "0.7.1"
+ring = "0.16.20"
+rsa-der = "0.3.0"
 
 # libtock's ninedof API needs libm
 libm = "0.2.7"

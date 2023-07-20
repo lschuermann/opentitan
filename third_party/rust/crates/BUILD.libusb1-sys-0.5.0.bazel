@@ -40,7 +40,7 @@ rust_library(
     ],
     version = "0.5.0",
     deps = [
-        "@crate_index__libc-0.2.139//:libc",
+        "@crate_index__libc-0.2.146//:libc",
         "@crate_index__libusb1-sys-0.5.0//:build_script_build",
     ],
 )
@@ -76,7 +76,7 @@ cargo_build_script(
     visibility = ["//visibility:private"],
     deps = [
         "@crate_index__cc-1.0.79//:cc",
-        "@crate_index__pkg-config-0.3.26//:pkg_config",
+        "@crate_index__pkg-config-0.3.27//:pkg_config",
     ] + select({
         "@rules_rust//rust/platform:aarch64-pc-windows-msvc": [
             "@crate_index__vcpkg-0.2.15//:vcpkg",  # cfg(target_env = "msvc")

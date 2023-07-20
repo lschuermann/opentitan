@@ -40,7 +40,7 @@ rust_library(
     ],
     version = "0.1.4",
     deps = [
-        "@crate_index__libc-0.2.139//:libc",
+        "@crate_index__libc-0.2.146//:libc",
         "@crate_index__libudev-sys-0.1.4//:build_script_build",
     ],
 )
@@ -75,7 +75,7 @@ cargo_build_script(
     version = "0.1.4",
     visibility = ["//visibility:private"],
     deps = [
-        "@crate_index__pkg-config-0.3.26//:pkg_config",
+        "@crate_index__pkg-config-0.3.27//:pkg_config",
     ],
 )
 

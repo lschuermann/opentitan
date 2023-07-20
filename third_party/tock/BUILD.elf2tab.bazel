@@ -29,12 +29,15 @@ rust_library(
         "noclippy",
         "norustfmt",
     ],
-    version = "0.10.0-dev",
+    version = "0.11.0-dev",
     deps = [
         "@crate_index//:chrono",
         "@crate_index//:elf",
-        "@crate_index//:structopt",
+        "@crate_index//:clap",
         "@crate_index//:tar",
+	"@crate_index//:sha2",
+	"@crate_index//:ring",
+	"@crate_index//:rsa-der",
     ],
 )
 
@@ -61,12 +64,15 @@ rust_binary(
         "noclippy",
         "norustfmt",
     ],
-    version = "0.10.0-dev",
+    version = "0.11.0-dev",
     deps = [
         ":elf2tab",
         "@crate_index//:chrono",
         "@crate_index//:elf",
-        "@crate_index//:structopt",
+        "@crate_index//:clap",
         "@crate_index//:tar",
+	"@crate_index//:sha2",
+	"@crate_index//:ring",
+	"@crate_index//:rsa-der",	
     ],
 )
