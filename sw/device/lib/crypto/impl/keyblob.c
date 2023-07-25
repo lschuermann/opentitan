@@ -66,6 +66,8 @@ static status_t check_keyblob_length(const crypto_blinded_key_t *key) {
     HARDENED_CHECK_LE(key->keyblob_length / sizeof(uint32_t), num_words);
     return OTCRYPTO_OK;
   }
+
+  /* *((volatile uint8_t *) 0x9) = 0xFF; */
   return OTCRYPTO_BAD_ARGS;
 }
 
@@ -73,6 +75,7 @@ status_t keyblob_to_shares(const crypto_blinded_key_t *key, uint32_t **share0,
                            uint32_t **share1) {
   // Double-check the length of the keyblob.
   HARDENED_TRY(check_keyblob_length(key));
+  /* *((volatile uint8_t *) 0xa) = 0xFF; */
 
   size_t key_words = keyblob_share_num_words(key->config);
   *share0 = key->keyblob;

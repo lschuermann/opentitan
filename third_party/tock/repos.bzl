@@ -71,6 +71,13 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//kernel",
                 ],
             ),
+            "contsvc/BUILD": crate_build(
+                name = "contsvc",
+                deps = [
+                    "//kernel",
+                    "//libraries/tock-tbf",
+                ],
+            ),
             "libraries/enum_primitive/BUILD": crate_build(
                 name = "enum_primitive",
             ),
@@ -115,6 +122,7 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//libraries/tock-tbf",
                     "//capsules/core:capsules-core",
                     "//capsules/extra:capsules-extra",
+                    "//contsvc",
                 ],
             ),
         },

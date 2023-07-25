@@ -4,16 +4,26 @@
 
 MEMORY
 {
-  rom   (rx)  : ORIGIN = 0x20000000, LENGTH = 0x40000
-  /* Support up to 0x2009_0000 for apps
-   * and 0x2009_0000 to 0x2010_0000 is for flash storage.
+  rom   (rx)  : ORIGIN = 0x20000000, LENGTH = 0xa0000
+  /* Support up to 0x200a_0000 for apps
+   * and 0x200a_0000 to 0x2010_0000 is for flash storage.
    */
-  prog  (rx)  : ORIGIN = 0x20040000, LENGTH = 0x60000
-  ram   (!rx) : ORIGIN = 0x10000000, LENGTH = 0x20000
+  prog  (rx)  : ORIGIN = 0x200a0000, LENGTH = 0x10000
+  flash_storage (r) : ORIGIN = 0x200b0000, LENGTH = 0x50000
+  ram   (!rx) : ORIGIN = 0x10000000, LENGTH = 0x18000
 }
 
 MPU_MIN_ALIGN = 1K;
 SECTIONS {
+    _sflash = ORIGIN(rom);
+    _eflash = ORIGIN(flash_storage) + LENGTH(flash_storage);
+    
+    _ssram = ORIGIN(ram);
+    _esram = ORIGIN(ram) + LENGTH(ram);
+
+    _dsvcram_start = ORIGIN(ram) + LENGTH(ram);
+    _dsvcram_end = ORIGIN(ram) + LENGTH(ram) + 0x8000;
+
     /*
      * The flash header needs to match what the boot ROM for OpenTitan is
      * expecting.  At the moment, it contains only the entry point, but it

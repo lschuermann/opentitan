@@ -185,22 +185,27 @@ crypto_status_t otcrypto_kmac(const crypto_blinded_key_t *key,
 
 crypto_status_t otcrypto_hmac_init(hmac_context_t *ctx,
                                    const crypto_blinded_key_t *key) {
+  /* *((volatile uint8_t *) 0xFF) = 0xFF; */
   if (ctx == NULL || key == NULL || key->keyblob == NULL) {
+    *((volatile uint8_t *) 0x0) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 
   if (key->config.hw_backed != kHardenedBoolFalse) {
     // TODO(#15590): Add support for sideloaded keys.
+    *((volatile uint8_t *) 0x1) = 0xFF;
     return OTCRYPTO_NOT_IMPLEMENTED;
   }
 
   // Key mode must be HMAC-SHA256.
   if (key->config.key_mode != kKeyModeHmacSha256) {
+    *((volatile uint8_t *) 0x2) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 
   // Check the integrity of the key.
   if (integrity_blinded_key_check(key) != kHardenedBoolTrue) {
+    *((volatile uint8_t *) 0x3) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 
@@ -218,14 +223,18 @@ crypto_status_t otcrypto_hmac_init(hmac_context_t *ctx,
   // Initialize the key block, K0. See FIPS 198-1, section 4.
   uint32_t k0[kSha256MessageBlockWords] = {0};
   if (key->config.key_length <= kSha256MessageBlockBytes) {
+    /* *((volatile uint8_t *) 0x5) = 0xFF; */
     // If the key fits into the SHA-256 block size, we just need to copy it
     // into the first part of K0.
     hardened_memcpy(k0, unmasked_key, ARRAYSIZE(unmasked_key));
+    /* *((volatile uint8_t *) 0x6) = 0xFF; */
   } else {
+    /* *((volatile uint8_t *) 0x7) = 0xFF; */
     // If the key is longer than the SHA-256 block size, we need to hash it
     // and write the digest into the start of K0.
     HARDENED_TRY(sha256((unsigned char *)unmasked_key, key->config.key_length,
                         (unsigned char *)k0));
+    /* *((volatile uint8_t *) 0x8) = 0xFF; */
   }
 
   // Compute SHA256(K0 ^ ipad).
@@ -244,12 +253,15 @@ crypto_status_t otcrypto_hmac_init(hmac_context_t *ctx,
   key_block_save(ctx, k0);
   sha256_state_save(ctx, &sha256_ctx);
 
+  /* *((volatile uint8_t *) 0xFE) = 0xFF; */
+
   return OTCRYPTO_OK;
 }
 
 crypto_status_t otcrypto_hmac_update(hmac_context_t *const ctx,
                                      crypto_const_uint8_buf_t input_message) {
   if (ctx == NULL || (input_message.data == NULL && input_message.len != 0)) {
+    *((volatile uint8_t *) 0x4) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 
@@ -264,10 +276,12 @@ crypto_status_t otcrypto_hmac_update(hmac_context_t *const ctx,
 crypto_status_t otcrypto_hmac_final(hmac_context_t *const ctx,
                                     crypto_uint8_buf_t *tag) {
   if (ctx == NULL || tag == NULL || tag->data == NULL) {
+    *((volatile uint8_t *) 0x5) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 
   if (tag->len != kSha256DigestBytes) {
+    *((volatile uint8_t *) 0x6) = 0xFF;
     return OTCRYPTO_BAD_ARGS;
   }
 

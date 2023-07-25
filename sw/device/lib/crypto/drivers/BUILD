@@ -125,6 +125,9 @@ cc_library(
         "//sw/device/lib/base:memory",
         "//sw/device/lib/crypto/impl:status",
     ],
+    features = [
+        "-opt",
+    ],
 )
 
 cc_library(

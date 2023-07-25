@@ -1,7 +1,3 @@
-/* Copyright lowRISC contributors. */
-/* Licensed under the Apache License, Version 2.0, see LICENSE for details. */
-/* SPDX-License-Identifier: Apache-2.0 */
-
 /* Layout file for Tock process binaries that use libtock-rs. This currently
  * implements static linking, because we do not have a working
  * position-independent relocation solution. This layout works for all
@@ -10,18 +6,20 @@
  * This layout should be included by a script that defines the FLASH and RAM
  * regions for the board as well as TBF_HEADER_SIZE. Here is a an example
  * process binary linker script to get started:
+ *
+ *     TBF_HEADER_SIZE = 0x60;
+ *
  *     MEMORY {
- *         FLASH (X) : ORIGIN = 0x10000, LENGTH = 0x10000
- *         RAM   (W) : ORIGIN = 0x20000, LENGTH = 0x10000
+ *         FLASH (X) : ORIGIN = 0x10000 + TBF_HEADER_SIZE, LENGTH = 0x10000 - TBF_HEADER_SIZE
+ *         RAM   (W) : ORIGIN = 0x20000                  , LENGTH = 0x10000
  *     }
- *     TBF_HEADER_SIZE = 0x48;
+ *
  *     INCLUDE ../libtock-rs/layout.ld
  *
- * FLASH refers to the area the process binary occupies in flash, including TBF
- * headers. RAM refers to the area the process will have access to in memory.
- * STACK_SIZE is the size of the process' stack (this layout file may round the
- * stack size up for alignment purposes). TBF_HEADER_SIZE must correspond to the
- * --protected-region-size flag passed to elf2tab.
+ * FLASH refers to the area the process binary occupies in flash, excluding the
+ * TBF headers. RAM refers to the area the process will have access to in
+ * memory. STACK_SIZE is the size of the process' stack (this layout file may
+ * round the stack size up for alignment purposes).
  *
  * This places the flash sections in the following order:
  *     1. .rt_header -- Constants used by runtime initialization.
@@ -36,6 +34,11 @@
  *     3. .bss   -- Zero-initialized read-write global data.
  *     4. Heap   -- The heap (optional) comes after .bss and grows upwards to
  *                  the process break.
+ *
+ * TBF_HEADER_SIZE is further used internally in the included `layout.ld` file
+ * to set the `tbf_protected_region_size` symbol. elf2tab will thus prepend TBF
+ * headers and an optional padding such that the final binary matches the
+ * intended app load address (0x10000 in the above example).
  */
 
 /* TODO: Should TBF_HEADER_SIZE be configured via a similar mechanism to the
@@ -48,23 +51,21 @@
 ENTRY(start)
 
 SECTIONS {
+    /* The FLASH memory section is placed at a TBF_HEADER_SIZE offset, to give
+     * elf2tab room to prepend the TBF headers. Communicate this reservation to
+     * elf2tab, such that it fills up the space after the TBF headers (if any)
+     * as part of the protected region trailer:
+     */
+    tbf_protected_region_size = TBF_HEADER_SIZE;
+
     /* Sections located in FLASH at runtime.
      */
-
-    /* Add a section where elf2tab will place the TBF headers, so that the rest
-     * of the FLASH sections are in the right locations. */
-
-
-    .tbf_header (NOLOAD) : {
-        . = . + TBF_HEADER_SIZE;
-    } > FLASH
-
-
 
     /* Runtime header. Contains values the linker knows that the runtime needs
      * to look up.
      */
-    .start ALIGN(4) : {
+    . = ALIGN(4);
+    .start : {
         /* We combine rt_header and _start into a single section. If we don't,
          * elf2tab does not parse the ELF file correctly for unknown reasons.
          */
@@ -88,11 +89,10 @@ SECTIONS {
 
     /* Read-only data section. Contains strings and other global constants. */
     .rodata ALIGN(4) : {
+        FILL(0xDEADBEEF);
         *(.rodata.*)
-        /* .data is placed after .rodata in flash. data_flash_start is used by
-         * AT() to place .data in flash as well as in rt_header.
-         */
-        _data_flash_start = .;
+
+        . = ALIGN(4);
     } > FLASH
 
     /* Sections located in RAM at runtime.
@@ -110,12 +110,12 @@ SECTIONS {
         KEEP(*(.stack_buffer))
         . = ALIGN(16);
         _stack_top = .;  /* Used in rt_header */
-    } > RAM
+    } > RAM AT > FLASH
 
     /* Read-write data section. This is deployed as part of FLASH but is copied
      * into RAM at runtime.
      */
-    .data ALIGN(4) : AT(_data_flash_start) {
+    .data ALIGN(4) : {
         data_ram_start = .;
         /* .sdata is the RISC-V small data section */
         *(.sdata .data)
@@ -123,7 +123,7 @@ SECTIONS {
          * copies.
          */
         . = ALIGN(4);
-    } > RAM
+    } > RAM AT > FLASH
 
     /* BSS section. These are zero-initialized static variables. This section is
      * not copied from FLASH into RAM but rather directly initialized, and is
@@ -133,7 +133,7 @@ SECTIONS {
     .bss ALIGN(4) (NOLOAD) : {
         /* .sbss is the RISC-V small data section */
         *(.sbss .bss.*)
-    } > RAM
+    } > RAM AT > FLASH
 
     _heap_start = ADDR(.bss) + SIZEOF(.bss);  /* Used by rt_header */
 

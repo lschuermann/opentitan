@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("//rules:linker.bzl", "ld_library")
 load("//rules:opentitan.bzl", "elf_to_disassembly", "obj_transform")
 
@@ -30,6 +30,11 @@ cc_library(
     ],
 )
 
+rust_library(
+    name = "kernel_crate",
+    crate_root = "@tock//kernel/src/lib.rs",
+)
+
 rust_binary(
     name = "kernel",
     srcs = [
@@ -49,6 +54,7 @@ rust_binary(
         ":nostartfiles",
         "@tock//boards/opentitan/earlgrey-cw310",
         "@tock//kernel",
+	#":kernel_crate",
     ],
 )
 

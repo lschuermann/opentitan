@@ -2,16 +2,16 @@
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+# load("//rules:opentitan.bzl", "OPENTITAN_CPU")
 load("//rules:linker.bzl", "ld_library")
 load("//rules:tock.bzl", "tock_elf2tab")
 
 package(default_visibility = ["//visibility:public"])
 
 ld_library(
-    name = "libtock_layout",
+    name = "cmpsvc_layout",
     includes = [
-        "libtock_layout.ld",
+        "cmpsvc_layout.ld",
     ],
 )
 
@@ -19,23 +19,29 @@ ld_library(
     name = "layout",
     script = "layout.ld",
     deps = [
-        ":libtock_layout",
+        ":cmpsvc_layout",
     ],
 )
 
-rust_binary(
-    name = "hello_elf",
+cc_binary(
+    name = "cryptolib_cmpsvc_elf",
     srcs = [
-        "src/hello.rs",
+        "main.c",
+        "init_riscv32.S",
     ],
     deps = [
         ":layout",
-        "@libtock",
+
+        "//sw/device/lib/crypto/drivers:hmac",
+        "//sw/device/lib/crypto/impl:mac",
+    ],
+    linkopts = [
+        "-nostartfiles",
     ],
 )
 
 tock_elf2tab(
-    name = "hello",
-    src = ":hello_elf",
-    # protected_region_size = 128,
+    name = "cryptolib_cmpsvc",
+    src = ":cryptolib_cmpsvc_elf",
+    disable = True,
 )
