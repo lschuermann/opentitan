@@ -155,7 +155,12 @@ static absl_status_t otcrypto_hmac_wrapped(const crypto_blinded_key_t *key,
   return status_err(status);
 }
 
-
+static crypto_status_t otcrypto_hmac_update_wrapped(hmac_context_t *const ctx,
+					    crypto_const_uint8_buf_t *input_message) {
+  return otcrypto_hmac_update(ctx, *input_message);
+}
+ 
+  
 typedef void (*fnptr)(void);
 
 fnptr const
@@ -176,7 +181,7 @@ contsvc_fntab[18] = {
   (fnptr) otcrypto_hmac_wrapped,                // 8
   (fnptr) otcrypto_kmac,                        // 9
   (fnptr) otcrypto_hmac_init,                   // 10
-  (fnptr) otcrypto_hmac_update,                 // 11
+  (fnptr) otcrypto_hmac_update_wrapped,         // 11
   (fnptr) otcrypto_hmac_final,                  // 12
 
   // integrity.h
