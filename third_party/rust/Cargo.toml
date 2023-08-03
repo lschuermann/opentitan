@@ -20,9 +20,9 @@ atty = "0.2"
 bitflags = { version = "2.1", features = ["serde"] }
 bitvec = "1.0.1"
 byteorder = "1.4.3"
-chrono = "0.4"
+chrono = { version = "0.4.2", features = ["clock", "std"] }
 # We're hitting a rustc bug in the nightly version we use that's exposed by clap >= 4.3
-clap = { version = "4.1, <=4.2.7", features = ["derive", "env"] }
+clap = { version = "4.1, <=4.2.7", features = ["derive", "env", "color", "wrap_help"] }
 crc = "3.0"
 deser-hjson = "1.0.2"
 directories = "4.0.1"
@@ -98,3 +98,12 @@ pest_derive = "2.2"
 
 # documentation generation tools
 mdbook = "0.4.31"
+
+# elf2tab dependencies
+tar = "0.4.36"
+elf = "0.7.1"
+ring = "0.16.20"
+rsa-der = "0.3.0"
+
+# libtock's ninedof API needs libm
+libm = "0.2.7"
