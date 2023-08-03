@@ -10,7 +10,7 @@ workspace(name = "lowrisc_opentitan")
 # CRT is the Compiler Repository Toolkit.  It contains the configuration for
 # the windows compiler.
 load("//third_party/crt:repos.bzl", "crt_repos")
-crt_repos()
+crt_repos(local="../crt")
 load("@crt//:repos.bzl", "crt_repos")
 crt_repos()
 load("@crt//:deps.bzl", "crt_deps")
@@ -70,7 +70,7 @@ load("//third_party/tock:repos.bzl", tock_repos="tock_repos")
 tock_repos(
     # For developing tock/libtock along side OpenTitan, set these parameters
     # to your local checkout of tock and libtock-rs respectively.
-    #tock = "../tock",
+    tock = "../tock",
     #libtock = "../libtock-rs",
 )
 

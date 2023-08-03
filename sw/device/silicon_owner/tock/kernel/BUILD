@@ -33,8 +33,11 @@ cc_library(
 rust_binary(
     name = "kernel",
     srcs = [
-        "src/main.rs",
+        "@tock//boards/opentitan/earlgrey-cw310:src/io.rs",
+        "@tock//boards/opentitan/earlgrey-cw310:src/otbn.rs",
+        "@tock//boards/opentitan/earlgrey-cw310:src/main.rs",
     ],
+    crate_root = "@tock//boards/opentitan/earlgrey-cw310:src/main.rs",
     rustc_flags = [
         "-g",
         #        "-Clinker=rust-lld",
@@ -47,8 +50,15 @@ rust_binary(
     deps = [
         ":layout",
         ":nostartfiles",
-        "@tock//boards/opentitan/earlgrey-cw310",
         "@tock//kernel",
+	"@tock//arch/rv32i",
+        "@tock//boards/components",
+        "@tock//chips/earlgrey",
+        "@tock//chips/lowrisc",
+        "@tock//libraries/tock-tbf",
+	#"@tock//capsules/aes_gcm:capsules-aes-gcm",
+        "@tock//capsules/core:capsules-core",
+        "@tock//capsules/extra:capsules-extra",
     ],
 )
 

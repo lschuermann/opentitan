@@ -7,6 +7,12 @@ load("@//rules:rust.bzl", "crate_build")
 load("@python3//:defs.bzl", "interpreter")
 load("@rules_python//python:pip.bzl", "pip_install")
 
+earlgrey_cw310_BUILD = """
+package(default_visibility = ["//visibility:public"])
+
+exports_files(glob(["src/**"]))
+"""
+
 def tock_repos(tock = None, libtock = None, elf2tab = None):
     bare_repository(
         name = "tock",
@@ -39,6 +45,15 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//kernel",
                     "//capsules/core:capsules-core",
                     "//capsules/extra:capsules-extra",
+                ],
+            ),
+            "capsules/aes_gcm/BUILD": crate_build(
+                name = "capsules-aes-gcm",
+                deps = [
+                    "//kernel",
+                    "//libraries/enum_primitive",
+                    "//libraries/tickv",
+                    "@crate_index//:ghash",
                 ],
             ),
             "capsules/core/BUILD": crate_build(
@@ -106,28 +121,16 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//libraries/tock-tbf",
                 ],
             ),
-            "boards/opentitan/earlgrey-cw310/BUILD": crate_build(
-                name = "earlgrey-cw310",
-                deps = [
-                    "//arch/rv32i",
-                    "//boards/components",
-                    "//kernel",
-                    "//chips/earlgrey",
-                    "//chips/lowrisc",
-                    "//libraries/tock-tbf",
-                    "//capsules/core:capsules-core",
-                    "//capsules/extra:capsules-extra",
-                ],
-            ),
+	    "boards/opentitan/earlgrey-cw310/BUILD": earlgrey_cw310_BUILD,
         },
     )
 
     bare_repository(
         name = "libtock",
         local = libtock,
-        strip_prefix = "libtock-rs-0f7c97627b7d49dd34129d40717eadba9d307a2d",
-        url = "https://github.com/tock/libtock-rs/archive/0f7c97627b7d49dd34129d40717eadba9d307a2d.tar.gz",
-        sha256 = "98bcd74c21bc8153fee0551ffc752edf8642fa5b5260802e545fdd89e33332ca",
+        strip_prefix = "libtock-rs-49779965a9575b03ef96df703bd2fc4b2f080a0c",
+        url = "https://github.com/tock/libtock-rs/archive/49779965a9575b03ef96df703bd2fc4b2f080a0c.tar.gz",
+        sha256 = "51355f3fd2361b10d37c7af0af0635ecb9645c1f03a19024f9f8427471d31971",
         additional_files_content = {
             "BUILD": crate_build(
                 name = "libtock",
