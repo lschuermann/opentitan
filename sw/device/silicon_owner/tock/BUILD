@@ -8,7 +8,9 @@ package(default_visibility = ["//visibility:public"])
 
 tock_image(
     name = "image",
-    # app = "//sw/device/silicon_owner/tock/apps/hello",
-    app = "//sw/device/silicon_owner/tock/cryptolib_cmpsvc",
+    apps = [
+        "//sw/device/silicon_owner/tock/cryptolib_cmpsvc",
+	"//sw/device/silicon_owner/tock/apps/hello",
+    ],
     kernel = "//sw/device/silicon_owner/tock/kernel",
 )

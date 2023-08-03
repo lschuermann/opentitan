@@ -44,4 +44,5 @@ tock_elf2tab(
     name = "cryptolib_cmpsvc",
     src = ":cryptolib_cmpsvc_elf",
     disable = True,
+    arch = "rv32imc",
 )

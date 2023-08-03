@@ -4,6 +4,9 @@
 
 load("@//rules:repo.bzl", "bare_repository", "http_archive_or_local")
 load("@//rules:rust.bzl", "crate_build")
+load("@python3//:defs.bzl", "interpreter")
+load("@rules_python//python:pip.bzl", "pip_install")
+
 
 def tock_repos(tock = None, libtock = None, elf2tab = None):
     bare_repository(
@@ -110,6 +113,7 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//libraries/tock-cells",
                     "//libraries/tock-tbf",
                 ],
+		crate_features = ["trace_syscalls"],
             ),
             "boards/opentitan/earlgrey-cw310/BUILD": crate_build(
                 name = "earlgrey-cw310",
@@ -275,3 +279,23 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
         strip_prefix = "elf2tab-d1bf5e392cae54aa021070319a0eb0488d745efb",
         build_file = "//third_party/tock:BUILD.elf2tab.bazel",
     )
+
+    # pip_wheel(
+    #     name = "tockloader_wheel",
+    # )
+
+    pip_install(
+        name = "tockloader_deps",
+        python_interpreter_target = interpreter,
+        requirements = "//:third_party/tock/tockloader_requirements.txt",
+        # find_links = "@ot_python_wheels//:all_wheels",
+        # extra_pip_args = ["--no-index"],
+    )
+
+    
+
+    # pip.parse(
+    #     hub_name = "tockloader",
+    # 	python_version = "3.10",
+    # 	requirements_lock = "//:tockloader_requirements_lock_3_10.txt",
+    # )

@@ -31,11 +31,13 @@ rust_binary(
     deps = [
         ":layout",
         "@libtock",
+	"@libtock//platform",
+        "@libtock//runtime",
     ],
 )
 
 tock_elf2tab(
     name = "hello",
     src = ":hello_elf",
-    # protected_region_size = 128,
+    arch = "rv32imc",
 )
