@@ -107,3 +107,6 @@ rsa-der = "0.3.0"
 
 # libtock's ninedof API needs libm
 libm = "0.2.7"
+
+# Tock's aes-gcm capsules crate dependencies
+ghash = "0.4.4"

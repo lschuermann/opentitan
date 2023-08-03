@@ -140,6 +140,12 @@ alias(
 )
 
 alias(
+    name = "ghash",
+    actual = "@crate_index__ghash-0.4.4//:ghash",
+    tags = ["manual"],
+)
+
+alias(
     name = "hex",
     actual = "@crate_index__hex-0.4.3//:hex",
     tags = ["manual"],
