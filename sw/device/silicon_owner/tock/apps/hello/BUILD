@@ -37,4 +37,5 @@ rust_binary(
 tock_elf2tab(
     name = "hello",
     src = ":hello_elf",
+    arch = "rv32imc",
 )

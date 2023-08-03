@@ -43,7 +43,7 @@ def _tock_elf2tab_impl(ctx):
         args.append("--stack={}".format(ctx.attr.stack))
     if ctx.attr.verbose:
         args.append("--verbose")
-    args.append(elffile.path)
+    args.append("{},{}".format(elffile.path, ctx.attr.arch))
 
     ctx.actions.run(
         mnemonic = "ELF2TAB",
@@ -72,6 +72,7 @@ tock_elf2tab = rule(
         "stack": attr.int(default = 0, doc = "Stack size"),
         "verbose": attr.bool(default = True, doc = "Verbose output"),
         "src": attr.label(mandatory = True, allow_single_file = True, doc = "ELF binary to convert"),
+        "arch": attr.string(mandatory = True, doc = "Target architecture for the ELF binary (e.g., `rv32imc`)"),
         "_elf2tab": attr.label(
             default = "@elf2tab//:bin",
             executable = True,
