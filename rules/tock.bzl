@@ -12,6 +12,7 @@ load(
     _OPENTITAN_CPU = "OPENTITAN_CPU",
     _OPENTITAN_PLATFORM = "OPENTITAN_PLATFORM",
 )
+load("@tockloader_deps//:requirements.bzl", "entry_point")
 
 TockApplication = provider(
     fields = {
@@ -84,36 +85,76 @@ tock_elf2tab = rule(
 def _tock_image_impl(ctx):
     cc_toolchain = find_cc_toolchain(ctx).cc
 
-    intermediate_elf = ctx.actions.declare_file("{}.elf".format(ctx.attr.name))
-    output = ctx.actions.declare_file("{}.bin".format(ctx.attr.name))
-    tab = ctx.attr.app[TockApplication].tbf
+    kernel_binary = ctx.actions.declare_file("{}_kernel.bin".format(ctx.attr.name))
+    images = [ctx.actions.declare_file("{}0.bin".format(ctx.attr.name))]
 
     ctx.actions.run(
-        outputs = [intermediate_elf],
-        inputs = [ctx.file.kernel, tab] + cc_toolchain.all_files.to_list(),
-        arguments = [
-            "--update-section",
-            ".apps={}".format(tab.path),
-            ctx.file.kernel.path,
-            intermediate_elf.path,
-        ],
-        executable = cc_toolchain.objcopy_executable,
-    )
-    ctx.actions.run(
-        outputs = [output],
-        inputs = [intermediate_elf] + cc_toolchain.all_files.to_list(),
+        outputs = [kernel_binary],
+        inputs = [ctx.file.kernel] + cc_toolchain.all_files.to_list(),
         arguments = [
             "--output-target=binary",
-            intermediate_elf.path,
-            output.path,
+            ctx.file.kernel.path,
+            kernel_binary.path,
         ],
         executable = cc_toolchain.objcopy_executable,
     )
+
+    ctx.actions.run(
+        outputs = [images[0]],
+        inputs = [kernel_binary],
+        arguments = [
+            "flash",
+            "--board",
+            "opentitan_earlgrey",
+            "--flash-file",
+            images[0].path,
+            "--address",
+            "0x20000000",
+            kernel_binary.path,
+        ],
+        executable = ctx.executable._tockloader,
+    )
+
+    for app in ctx.attr.apps:
+        tab = app[TockApplication].tab
+        input_image = images[-1]
+        output_image = ctx.actions.declare_file("{}{}.bin".format(ctx.attr.name, len(images)))
+        images += [output_image]
+
+        ctx.actions.run_shell(
+            outputs = [output_image],
+            inputs = [input_image, tab, ctx.executable._tockloader],
+            command = "\
+              cp {} {} &&\
+              chmod +rw {} &&\
+              {} install\
+                --board opentitan_earlgrey\
+                --flash-file {}\
+                --app-address {}\
+                {}\
+                {}\
+            ".format(
+                input_image.path,
+                output_image.path,
+                output_image.path,
+                ctx.executable._tockloader.path,
+                output_image.path,
+                ctx.attr.app_flash_start,
+                "--debug" if ctx.attr.debug else "",
+                tab.path,
+            ),
+        )
+
+    output = ctx.actions.declare_file("{}.bin".format(ctx.attr.name))
+    ctx.actions.symlink(
+        output = output,
+        target_file = images[-1],
+    )
+
     return [
         DefaultInfo(files = depset([output]), data_runfiles = ctx.runfiles(files = [output])),
         OutputGroupInfo(
             bin = depset([output]),
-            elf = depset([intermediate_elf]),
         ),
     ]
 
@@ -121,8 +162,18 @@ tock_image = rv_rule(
     implementation = _tock_image_impl,
     attrs = {
         "kernel": attr.label(mandatory = True, allow_single_file = True, doc = "Kernel ELF file"),
-        "app": attr.label(mandatory = True, providers = [TockApplication], doc = "Application TAB label"),
+        "app_flash_start": attr.int(mandatory = True, doc = "Start of flash region for applications"),
+        "apps": attr.label_list(mandatory = True, providers = [TockApplication], doc = "Application TAB labels"),
+        "debug": attr.bool(default = True, doc = "Tockloader debug output"),
         "_cc_toolchain": attr.label(default = Label("@bazel_tools//tools/cpp:current_cc_toolchain")),
+        "_tockloader": attr.label(
+            default = entry_point(
+                pkg = "tockloader",
+                script = "tockloader",
+            ),
+            executable = True,
+            cfg = "exec",
+        ),
     },
     toolchains = ["@rules_cc//cc:toolchain_type"],
 )

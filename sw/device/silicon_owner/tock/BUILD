@@ -8,6 +8,9 @@ package(default_visibility = ["//visibility:public"])
 
 tock_image(
     name = "image",
-    app = "//sw/device/silicon_owner/tock/apps/hello",
     kernel = "//sw/device/silicon_owner/tock/kernel",
+    apps = [
+        "//sw/device/silicon_owner/tock/apps/hello",
+    ],
+    app_flash_start = 0x20040000,
 )

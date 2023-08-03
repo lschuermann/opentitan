@@ -4,6 +4,8 @@
 
 load("@//rules:repo.bzl", "bare_repository", "http_archive_or_local")
 load("@//rules:rust.bzl", "crate_build")
+load("@python3//:defs.bzl", "interpreter")
+load("@rules_python//python:pip.bzl", "pip_install")
 
 def tock_repos(tock = None, libtock = None, elf2tab = None):
     bare_repository(
@@ -263,4 +265,10 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
         sha256 = "350514dcd2711fb45fdd38087862055f6006638881d6c0866fadb346bb1b3be9",
         strip_prefix = "elf2tab-ede1c658a3892d21b076fb2c9df6328ec4c9011e",
         build_file = Label("//third_party/tock:BUILD.elf2tab.bazel"),
+    )
+
+    pip_install(
+        name = "tockloader_deps",
+        python_interpreter_target = interpreter,
+        requirements = "//:third_party/tock/tockloader_requirements.txt",
     )
