@@ -11,6 +11,7 @@ rust_binary(
     name = "hello",
     srcs = [
         "src/hello.rs",
+	"src/hmac.rs",
     ],
     deps = [
         "//sw/device/silicon_owner/tock/apps:single_app_layout",
@@ -28,5 +29,5 @@ tock_image(
     name = "image",
     app_flash_start = 0x20040000,
     apps = [":tab"],
-    kernel = "//sw/device/silicon_owner/tock/kernel",
+    kernel = "//sw/device/silicon_owner/tock/kernel:kernel",
 )

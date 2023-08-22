@@ -145,6 +145,10 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                     "//libraries/tock-cells",
                     "//libraries/tock-tbf",
                 ],
+		crate_features = [
+		    "debug_load_processes",
+		    # "trace_syscalls",
+		],
             ),
         },
     )
