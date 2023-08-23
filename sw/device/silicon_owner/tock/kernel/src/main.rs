@@ -53,10 +53,19 @@ mod tests;
 /// dependent on these feature flags and type safety will be guaranteed,
 /// regardless of which configuration is used during CI. If no feature is
 /// selected, compilation will error.
-#[cfg(feature = "fpga_cw310")]
-type ChipConfig = earlgrey::chip_config::EarlGreyConfigFPGACW310;
-#[cfg(feature = "sim_verilator")]
-type ChipConfig = earlgrey::chip_config::EarlGreyConfigSimVerilator;
+// #[cfg(feature = "fpga_cw310")]
+// type ChipConfig = earlgrey::chip_config::EarlGreyConfigFPGACW310;
+// #[cfg(feature = "sim_verilator")]
+// type ChipConfig = earlgrey::chip_config::EarlGreyConfigSimVerilator;
+
+enum ChipConfig {}
+impl EarlGreyConfig for ChipConfig {
+    const NAME: &'static str = "fpga_cw310-downstream";
+    const CPU_FREQ: u32 = 24_000_000;
+    const PERIPHERAL_FREQ: u32 = 6_000_000;
+    const AON_TIMER_FREQ: u32 = 250_000;
+    const UART_BAUDRATE: u32 = 115200;
+}
 
 const NUM_PROCS: usize = 4;
 
