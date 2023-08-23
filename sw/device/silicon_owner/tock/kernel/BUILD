@@ -64,6 +64,9 @@ rust_binary(
         "@tock//kernel",
         "@tock//libraries/tock-tbf",
     ],
+    crate_features = [
+        "fpga_cw310",
+    ],
 )
 
 obj_transform(
