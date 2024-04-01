@@ -289,6 +289,29 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
         },
     )
 
+    bare_repository(
+        name = "encapfn",
+	local = "../encapfn",
+        strip_prefix = "encapfn-insertcommithash",
+        url = "https://github.com/princeton-sns/encapfn/archive/insertcommithash.tar.gz",
+        sha256 = "insertotherhash",
+        additional_files_content = {
+            "BUILD": """exports_files(glob(["**"]))""",
+            "encapfn/BUILD": crate_build(
+                name = "encapfn",
+                deps = [
+                    #"//kernel",
+                    #"//libraries/tock-register-interface:tock-registers",
+                    #"//libraries/riscv-csr",
+                ],
+                crate_features = [
+                    "mockrt_vla_alloc",
+		    "stack_alloc",
+                ],
+            ),
+        },
+    )
+
     http_archive_or_local(
         name = "elf2tab",
         local = elf2tab,

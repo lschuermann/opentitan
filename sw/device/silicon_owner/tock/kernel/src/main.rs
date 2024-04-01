@@ -10,7 +10,7 @@
 // Disable this attribute when documenting, as a workaround for
 // https://github.com/rust-lang/rust/issues/62184.
 #![cfg_attr(not(doc), no_main)]
-#![feature(custom_test_frameworks, naked_functions)]
+#![feature(custom_test_frameworks, naked_functions, c_str_literals, offset_of, pointer_byte_offsets)]
 #![test_runner(test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
@@ -860,7 +860,7 @@ unsafe fn setup() -> (
     let mut keyblob_array: [u32; 128] = [0; 128];
     assert!(keyblob_array.len() >= keyblob_words);
 
-    let keyblob_res = otcrypto_mac_ef_bindings::keyblob_from_key_and_mask(
+    let _keyblob_res = otcrypto_mac_ef_bindings::keyblob_from_key_and_mask(
         &test_key as *const _ as *const u32,
         &test_mask as *const _ as *const u32,
         blinded_key.config,
@@ -907,6 +907,142 @@ unsafe fn setup() -> (
     );
 
     debug!("Finished hmac, tag: {:x?}", &tag_buf);
+   
+    encapfn::branding::new(|brand| {
+        use encapfn::branding::EFLifetimeBranding;
+        use encapfn::rt::{EncapfnRt, mock::MockRt};
+        use otcrypto_mac_ef_bindings::LibOTCryptoMAC;
+
+        // unsafe
+        let (rt, mut alloc, mut access) = MockRt::new(brand);
+
+        // build library wrapper:
+        let lib: otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+            '_, EFLifetimeBranding<'_>, MockRt<EFLifetimeBranding<'_>>> =
+                otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(&rt).unwrap();
+
+        // Operate in an HMAC context. In the actual driver, this would need to be persisted across
+        // asynchronous calls into the library (so, copied to & from some mutable storage in the
+        // Rust wrapper):
+        lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(&mut alloc, |hmac_context, alloc| {
+            // Create a key and initialize the context with that key:
+            lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_blinded_key_t, _, _>(alloc, |blinded_key, alloc| {
+                // This is problematic. We only want to write the config portion of the key, but
+                // cannot currently safety get access to this sub-field of the key using some
+                // convenient interface. We need to downgrade the key to a ptr, add the `config`
+                // field offset to that, upgrade it again, and then write the config. That's very
+                // inconvenient, we should generate methods to index into structs in EFRefs:
+                //let blinded_key_ptr: *mut otcrypto_mac_ef_bindings::crypto_blinded_key_t =
+                //    blinded_key.as_ptr().into();
+                //let blinded_key_config = EFPtr::<otcrypto_mac_ef_bindings::crypto_key_config>::from(
+                //    unsafe { blinded_key_ptr.byte_add(core::mem::offset_of!(
+                //            otcrypto_mac_ef_bindings::crypto_blinded_key_t, config)) } as *mut _
+                //).upgrade_mut(alloc).unwrap();
+
+                let key_config_rust = otcrypto_mac_ef_bindings::crypto_key_config {
+                    version: otcrypto_mac_ef_bindings::crypto_lib_version_kCryptoLibVersion1,
+                    key_mode: otcrypto_mac_ef_bindings::key_mode_kKeyModeHmacSha256,
+                    key_length: 32, // HMAC-SHA256
+                    hw_backed: otcrypto_mac_ef_bindings::hardened_bool_kHardenedBoolFalse,
+                    //diversification_hw_backed: otcrypto_mac_ef_bindings::crypto_const_uint8_buf_t {
+                    //    data: core::ptr::null(),
+                    //    len: 0,
+                    //},
+                    exportable: otcrypto_mac_ef_bindings::hardened_bool_kHardenedBoolFalse,
+                    security_level: otcrypto_mac_ef_bindings::crypto_key_security_level_kSecurityLevelLow,
+                };
+
+                //blinded_key_config.write(key_config_rust, &mut access);
+
+                // Create keyblob from key and mask:
+                let keyblob_words = lib.keyblob_num_words(key_config_rust, &mut access)
+                    .unwrap().validate().unwrap();
+
+                lib.rt().allocate_stacked_slice::<u32, _, _>(keyblob_words, alloc, |keyblob, alloc| {
+                    lib.rt().allocate_stacked_t::<[u32; 17], _, _>(alloc, |test_mask, alloc| {
+                        test_mask.write([ 
+	                         0x8cb847c3, 0xc6d34f36, 0x72edbf7b, 0x9bc0317f, 0x8f003c7f, 0x1d7ba049,
+	                         0xfd463b63, 0xbb720c44, 0x784c215e, 0xeb101d65, 0x35beb911, 0xab481345,
+	                         0xa7ebc3e3, 0x04b2a1b9, 0x764a9630, 0x78b8f9c5, 0x3f2a1d8e,
+                        ], &mut access);
+
+                        lib.rt().allocate_stacked_t::<[u32; 8], _, _>(alloc, |test_key, _alloc| {
+                            test_key.write([0; 8], &mut access);
+
+                            lib.keyblob_from_key_and_mask(
+                                test_key.as_ptr().cast::<u32>().into(),
+                                test_mask.as_ptr().cast::<u32>().into(),
+                                key_config_rust,
+                                keyblob.as_ptr().into(),
+                                &mut access,
+                            ).unwrap();
+                        }).unwrap();
+                    }).unwrap();
+
+                    debug!("EF -- Produced keyblob: {:x?}", &*keyblob.validate(&access).unwrap());
+
+                    blinded_key.write(otcrypto_mac_ef_bindings::crypto_blinded_key_t {
+                        config: key_config_rust,
+                        keyblob: keyblob.as_ptr().into(),
+                        keyblob_length: keyblob_words * core::mem::size_of::<u32>(),
+                        checksum: 0,
+                    }, &mut access);
+
+                    let checksum = lib.integrity_blinded_checksum(blinded_key.as_ptr().into(), &mut access)
+                        .unwrap().validate().unwrap();
+
+                    // TODO: this should really only update the inner reference! 
+                    blinded_key.write(otcrypto_mac_ef_bindings::crypto_blinded_key_t {
+                        config: key_config_rust,
+                        keyblob: keyblob.as_ptr().into(),
+                        keyblob_length: keyblob_words * core::mem::size_of::<u32>(),
+                        checksum: checksum,
+                    }, &mut access);
+
+                    lib.otcrypto_hmac_init(
+                        hmac_context.as_ptr().into(),
+                        blinded_key.as_ptr().into(),
+                        &mut access,
+                    ).unwrap();
+
+                    let data = b"Hello World, this is some data to HMAC!";
+                    lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
+                        data_slice.copy_from_slice(data, &mut access);
+
+                        let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
+                            data: data_slice.as_ptr().into(),
+                            len: data_slice.len()
+                        };
+
+                        lib.otcrypto_hmac_update(
+                            hmac_context.as_ptr().into(),
+                            msg_buf,
+                            &mut access,
+                        ).unwrap();
+
+                        lib.rt().allocate_stacked_t::<[u32; 256 / 32], _, _>(alloc, |tag_array, alloc| {
+                            lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_word32_buf_t, _, _>(alloc, |tag_buf, _alloc| {
+                                tag_buf.write(otcrypto_mac_ef_bindings::crypto_word32_buf_t {
+                                    data: tag_array.as_ptr().cast::<u32>().into(),
+                                    len: 256 / 32,
+                                }, &mut access);
+
+                                lib.otcrypto_hmac_final(
+                                    hmac_context.as_ptr().into(),
+                                    tag_buf.as_ptr().into(),
+                                    &mut access,
+                                ).unwrap();
+
+                                debug!("Finished hmac, tag: {:x?}", &*tag_array.validate(&mut access).unwrap())
+                            }).unwrap();
+                        }).unwrap();
+                    }).unwrap();
+                }).unwrap();
+            }).unwrap();
+        }).unwrap();
+
+    });
+
 
     (board_kernel, earlgrey, chip, peripherals)
 }
