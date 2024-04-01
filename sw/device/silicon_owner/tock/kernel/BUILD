@@ -57,47 +57,14 @@ genrule(
     cmd = "mkdir -p src && cp $< $@",
 )
 
-# rust_bindgen(
-#     name = "otcrypto_keyblob_bindings_rs",
-#     cc_lib = "//sw/device/lib/crypto/impl:keyblob",
-#     header = "//sw/device/lib/crypto/impl:keyblob.h",
-#     bindgen_flags = [
-#         "--use-core",
-#     ],
-# )
-# 
-# genrule(
-#     name = "otcrypto_keyblob_bindings_src_rs",
-#     srcs = [":otcrypto_keyblob_bindings_rs"],
-#     outs = ["src/otcrypto_keyblob_bindings.rs"],
-#     cmd = "mkdir -p src && cp $< $@",
-# )
-
-# write_file(
-#     name = "otcrypto_mac_bindings_lib",
-#     output = "src/lib.rs",
-#     content = '''
-#         mod otcrypto_mac_bindings;
-# 	pub use otcrypto_mac_bindings::*;
-#     ''',
-# )
-# 
-# rust_library(
-#     name = "otcrypto_mac_bindings",
-#     srcs = [
-#         ":otcrypto_mac_bindings_lib",
-# 	":otcrypto_mac_bindings_src_rs",
-#     ],
-#     crate_root = ":otcrypto_mac_bindings_lib",
-# )
-
 rust_binary(
     name = "kernel",
     srcs = [
         "src/io.rs",
         "src/main.rs",
         "src/otbn.rs",
-	":otcrypto_mac_bindings_src_rs",
+	"src/otcrypto_mac_ef_bindings.rs",
+	#":otcrypto_mac_bindings_src_rs",
     ],
     rustc_flags = [
         "-g",
@@ -117,7 +84,6 @@ rust_binary(
         ":nostartfiles",
 	"//sw/device/lib/crypto/drivers:hmac",
 	"//sw/device/lib/crypto/impl:mac",
-	# ":otcrypto_mac_bindings",
         "@tock//arch/rv32i",
         "@tock//boards/components",
         "@tock//capsules/aes_gcm:capsules-aes-gcm",
