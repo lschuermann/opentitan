@@ -45,6 +45,12 @@ mod otbn;
 #[cfg(test)]
 mod tests;
 
+// otcrypto mac.h bindings, automatically generated:
+#[allow(non_upper_case_globals)]
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
+mod otcrypto_mac_bindings;
+
 const NUM_PROCS: usize = 4;
 
 //
@@ -822,6 +828,85 @@ unsafe fn setup() -> (
         debug!("{:?}", err);
     });
     debug!("OpenTitan (downstream) initialisation complete. Entering main loop");
+
+    use core::mem::MaybeUninit;
+    let mut hmac_context: otcrypto_mac_bindings::hmac_context_t = MaybeUninit::zeroed().assume_init();
+    let mut blinded_key: otcrypto_mac_bindings::crypto_blinded_key_t = MaybeUninit::zeroed().assume_init();
+    blinded_key.config = otcrypto_mac_bindings::crypto_key_config {
+        version: otcrypto_mac_bindings::crypto_lib_version_kCryptoLibVersion1,
+        key_mode: otcrypto_mac_bindings::key_mode_kKeyModeHmacSha256,
+        key_length: 32, // HMAC-SHA256
+        hw_backed: otcrypto_mac_bindings::hardened_bool_kHardenedBoolFalse,
+        //diversification_hw_backed: otcrypto_mac_bindings::crypto_const_uint8_buf_t {
+        //    data: core::ptr::null(),
+        //    len: 0,
+        //},
+        exportable: otcrypto_mac_bindings::hardened_bool_kHardenedBoolFalse,
+        security_level: otcrypto_mac_bindings::crypto_key_security_level_kSecurityLevelLow,
+    };
+
+    let keyblob_words = otcrypto_mac_bindings::keyblob_num_words(blinded_key.config);
+
+    let test_mask: [u32; 17] = [
+	    0x8cb847c3, 0xc6d34f36, 0x72edbf7b, 0x9bc0317f, 0x8f003c7f, 0x1d7ba049,
+	    0xfd463b63, 0xbb720c44, 0x784c215e, 0xeb101d65, 0x35beb911, 0xab481345,
+	    0xa7ebc3e3, 0x04b2a1b9, 0x764a9630, 0x78b8f9c5, 0x3f2a1d8e,
+    ];
+
+    let test_key: [u32; 8] = [0; 8];
+
+    // Can't dynamically allocate on the stack, so let's just allocate a bunch of space and hope
+    // this is sufficient:
+    let mut keyblob_array: [u32; 128] = [0; 128];
+    assert!(keyblob_array.len() >= keyblob_words);
+
+    let keyblob_res = otcrypto_mac_bindings::keyblob_from_key_and_mask(
+        &test_key as *const _ as *const u32,
+        &test_mask as *const _ as *const u32,
+        blinded_key.config,
+        &mut keyblob_array as *mut _ as *mut u32,
+    );
+
+    debug!("Produced keyblob: {:x?}", &keyblob_array);
+
+    blinded_key.keyblob = &mut keyblob_array as *mut _ as *mut u32;
+    blinded_key.keyblob_length = keyblob_words * core::mem::size_of::<u32>();
+    blinded_key.checksum = 0;
+
+    let checksum = otcrypto_mac_bindings::integrity_blinded_checksum(&blinded_key as *const _);
+
+    blinded_key.checksum = checksum;
+
+    otcrypto_mac_bindings::otcrypto_hmac_init(
+        &mut hmac_context as *mut _,
+        &blinded_key as *const _,
+    );
+
+    let data = b"Hello World, this is some data to HMAC!";
+
+    let msg_buf = otcrypto_mac_bindings::crypto_const_byte_buf_t {
+        data: data as *const u8,
+        len: data.len()
+    };
+
+    otcrypto_mac_bindings::otcrypto_hmac_update(
+        &mut hmac_context as *mut _,
+        msg_buf,
+    );
+
+    let mut tag_buf: [u32; 256 / 32] = [0x42; 256 / 32];
+
+    let mut tag = otcrypto_mac_bindings::crypto_word32_buf_t {
+        data: &mut tag_buf as *mut _ as *mut u32,
+        len: 256 / 32,
+    };
+
+    otcrypto_mac_bindings::otcrypto_hmac_final(
+        &mut hmac_context as *mut _,
+        &mut tag as *mut _,
+    );
+
+    debug!("Finished hmac, tag: {:x?}", &tag_buf);
 
     (board_kernel, earlgrey, chip, peripherals)
 }
