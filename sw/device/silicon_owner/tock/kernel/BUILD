@@ -2,9 +2,10 @@
 # Licensed under the Apache License, Version 2.0, see LICENSE for details.
 # SPDX-License-Identifier: Apache-2.0
 
-load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 load("//rules:linker.bzl", "ld_library")
 load("//rules:opentitan.bzl", "OPENTITAN_CPU", "elf_to_disassembly", "obj_transform")
+load("@//rules:rust.bzl", "crate_build")
 load("@rules_rust//bindgen:bindgen.bzl", "rust_bindgen")
 
 package(default_visibility = ["//visibility:public"])
@@ -85,6 +86,7 @@ rust_binary(
         ":nostartfiles",
 	"//sw/device/lib/crypto/drivers:hmac",
 	"//sw/device/lib/crypto/impl:mac",
+	"@encapfn//encapfn",
         "@tock//arch/rv32i",
         "@tock//boards/components",
         "@tock//capsules/aes_gcm:capsules-aes-gcm",

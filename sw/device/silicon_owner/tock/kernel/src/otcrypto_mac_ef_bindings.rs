@@ -46,12 +46,12 @@ pub trait LibOTCryptoMAC<
     ) -> ::encapfn::EFResult<u32>;
 }
 pub const LibOTCryptoMACFntab: [&'static ::core::ffi::CStr; 6usize] = [
-    c"keyblob_from_key_and_mask",
-    c"integrity_blinded_checksum",
     c"keyblob_num_words",
+    c"keyblob_from_key_and_mask",
     c"otcrypto_hmac_update",
-    c"otcrypto_hmac_final",
     c"otcrypto_hmac_init",
+    c"otcrypto_hmac_final",
+    c"integrity_blinded_checksum",
 ];
 pub const LibOTCryptoMACFixedFntab: [Option<&'static ::core::ffi::CStr>; 6usize] = [
     Some(c"keyblob_num_words"),
@@ -225,7 +225,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
         ) {
             core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(5usize, &self.symbols).unwrap();
+        let ef_sym = self.rt().lookup_symbol(3usize, &self.symbols).unwrap();
         let mut ef_res = <<RT as ::encapfn::rt::sysv_amd64::SysVAMD64BaseRt>::InvokeRes<
             crypto_status_t,
         > as ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes<RT, crypto_status_t>>::new(
@@ -261,7 +261,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
         ) {
             core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(3usize, &self.symbols).unwrap();
+        let ef_sym = self.rt().lookup_symbol(2usize, &self.symbols).unwrap();
         let mut ef_res = <<RT as ::encapfn::rt::sysv_amd64::SysVAMD64BaseRt>::InvokeRes<
             crypto_status_t,
         > as ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes<RT, crypto_status_t>>::new(
@@ -331,7 +331,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
         ) {
             core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        self . rt () . allocate_stacked_untracked (:: std :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: std :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (2usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < usize > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , usize > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_num_words_int :: < RT > (config , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , usize > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
+        self . rt () . allocate_stacked_untracked (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (0usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < usize > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , usize > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_num_words_int :: < RT > (config , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , usize > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
     }
     #[inline]
     fn keyblob_from_key_and_mask(
@@ -359,7 +359,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
         ) {
             core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        self . rt () . allocate_stacked_untracked (:: std :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: std :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (0usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < status_t > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , status_t > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_from_key_and_mask_int :: < RT > (key , mask , config , keyblob , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , status_t > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
+        self . rt () . allocate_stacked_untracked (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (1usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < status_t > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , status_t > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_from_key_and_mask_int :: < RT > (key , mask , config , keyblob , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , status_t > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
     }
     #[inline]
     fn integrity_blinded_checksum(
@@ -381,7 +381,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
         ) {
             core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(1usize, &self.symbols).unwrap();
+        let ef_sym = self.rt().lookup_symbol(5usize, &self.symbols).unwrap();
         let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < u32 > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , u32 > > :: new () ;
         let ef_res_borrowed = &mut ef_res;
         self.rt().execute(move || unsafe {
