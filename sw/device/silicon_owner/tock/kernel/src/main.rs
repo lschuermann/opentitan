@@ -810,6 +810,48 @@ unsafe fn setup() -> (
     hil::symmetric_encryption::AES128GCM::set_client(gcm_client, aes);
     hil::symmetric_encryption::AES128::set_client(gcm_client, ccm_client);
 
+    // OpenTitan CryptoLib HMAC driver:
+
+    // Must only be constructed once, which is what we guarantee with the "unsafe impl" below:
+    struct OTCryptoLibHMACID;
+    unsafe impl encapfn::branding::EFID for OTCryptoLibHMACID {}
+
+    // Safety relies on OTCryptoLibHMACID only being constructed once:
+    let (rt, alloc, access) = static_init!(
+        (
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            encapfn::types::AllocScope<
+                'static,
+                <encapfn::rt::mock::MockRt::<OTCryptoLibHMACID> as EncapfnRt>::AllocTracker<'static>,
+                OTCryptoLibHMACID
+            >,
+            encapfn::types::AccessScope<OTCryptoLibHMACID>,
+        ),
+        encapfn::rt::mock::MockRt::new(OTCryptoLibHMACID)
+    );
+
+    let bound_rt = static_init!(
+        otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+            'static,
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+        >,
+        otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(rt).unwrap(),
+    );
+
+    let ot_crypotlib_hmac = static_init!(
+        OTCryptoLibHMAC<
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+                'static,
+                OTCryptoLibHMACID,
+                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            >,
+        >,
+        OTCryptoLibHMAC::new(bound_rt, alloc, access)
+    );
+
     let syscall_filter = static_init!(TbfHeaderFilterDefaultAllow, TbfHeaderFilterDefaultAllow {});
     let scheduler = components::sched::priority::PriorityComponent::new(board_kernel)
         .finalize(components::priority_component_static!());
@@ -1074,6 +1116,56 @@ unsafe fn setup() -> (
 
     (board_kernel, earlgrey, chip, peripherals)
 }
+
+use core::cell::RefCell;
+
+use encapfn::branding::EFID;
+use encapfn::rt::EncapfnRt;
+use encapfn::types::{AllocScope, AccessScope, EFCopy, EFMutRef};
+
+use otcrypto_mac_ef_bindings::LibOTCryptoMAC;
+
+use kernel::utilities::cells::TakeCell;
+
+struct OTCryptoLibHMAC<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> {
+    lib: &'l L,
+    alloc_scope: TakeCell<'l, AllocScope<'l, RT::AllocTracker<'l>, RT::ID>>,
+    access_scope: TakeCell<'l, AccessScope<RT::ID>>,
+    hmac_context: RefCell<EFCopy<otcrypto_mac_ef_bindings::hmac_context_t>>,
+}
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> OTCryptoLibHMAC<'l, ID, RT, L> {
+    pub fn new(
+        lib: &'l L,
+        alloc_scope: &'l mut AllocScope<'l, RT::AllocTracker<'l>, RT::ID>,
+        access_scope: &'l mut AccessScope<RT::ID>,
+    ) -> Self {
+        OTCryptoLibHMAC {
+            lib,
+            alloc_scope: TakeCell::new(alloc_scope),
+            access_scope: TakeCell::new(access_scope),
+            hmac_context: RefCell::new(EFCopy::zeroed()),
+        }
+    }
+
+    fn with_hmac_context<R, F>(&self, alloc: &mut AllocScope<'_, RT::AllocTracker<'_>, RT::ID>, access: &mut AccessScope<RT::ID>, f: F) -> R
+        where F: FnOnce(
+            &mut AllocScope<'_, RT::AllocTracker<'_>, RT::ID>,
+            &mut AccessScope<RT::ID>,
+            EFMutRef<'_, ID, otcrypto_mac_ef_bindings::hmac_context_t>,
+        ) -> R
+    {
+        let mut stored_hmac_context = self.hmac_context.borrow_mut();
+        self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |stacked_context, alloc| {
+            // Copy our copy of the context into the stacked context:
+            stacked_context.write_copy(&*stored_hmac_context, access);
+            let res = f(alloc, access, stacked_context);
+            stored_hmac_context.update_from_mut_ref(&stacked_context, access);
+            res
+        }).unwrap()
+    }
+}
+
 
 /// Main function.
 ///
