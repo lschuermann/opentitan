@@ -1074,7 +1074,6 @@ unsafe fn setup() -> (
                         blinded_key.as_ptr().into(),
                         &mut access,
                     ).unwrap();
-
                     let data = b"Hello World, this is some data to HMAC!";
                     lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
                         data_slice.copy_from_slice(data, &mut access);
@@ -1084,6 +1083,7 @@ unsafe fn setup() -> (
                             len: data_slice.len()
                         };
 
+                        //let a: () = hmac_context;
                         lib.otcrypto_hmac_update(
                             hmac_context.as_ptr().into(),
                             msg_buf,
@@ -1113,6 +1113,7 @@ unsafe fn setup() -> (
 
     });
 
+    kernel::debug!("HMAC Capsule Test");
 
     (board_kernel, earlgrey, chip, peripherals)
 }
@@ -1126,6 +1127,10 @@ use encapfn::types::{AllocScope, AccessScope, EFCopy, EFMutRef};
 use otcrypto_mac_ef_bindings::LibOTCryptoMAC;
 
 use kernel::utilities::cells::TakeCell;
+use kernel::utilities::leasable_buffer::SubSliceMut;
+use kernel::utilities::leasable_buffer::SubSlice;
+use kernel::ErrorCode;
+use kernel::hil::digest;
 
 struct OTCryptoLibHMAC<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> {
     lib: &'l L,
@@ -1166,6 +1171,93 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
     }
 }
 
+// HMAC Driver
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::Digest<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_client(&'l self, client: &'l dyn digest::Client<B>) {}
+}
+
+/*
+ *
+                    let data = b"Hello World, this is some data to HMAC!";
+                    lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
+                        data_slice.copy_from_slice(data, &mut access);
+
+                        let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
+                            data: data_slice.as_ptr().into(),
+                            len: data_slice.len()
+                        };
+
+                        lib.otcrypto_hmac_update(
+                            hmac_context.as_ptr().into(),
+                            msg_buf,
+                            &mut access,
+                        ).unwrap();
+ *
+ * */
+
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestData<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_data_client(&'l self, client: &'l dyn digest::ClientData<B>){ }
+    
+    fn add_data(
+        &self,
+        data: SubSlice<'static, u8>,
+    ) -> Result<(), (ErrorCode, SubSlice<'static, u8>)> {
+        let access = self.access_scope.take().unwrap();
+        let alloc = self.alloc_scope.take().unwrap();
+
+        let res = self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
+            self.lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
+                 data_slice.copy_from_slice(data.as_slice(), access);
+
+                 let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
+                     data: data_slice.as_ptr().into(),
+                     len: data_slice.len()
+                 };
+
+                 self.lib.otcrypto_hmac_update(
+                     hmac_context.as_ptr().into(),
+                     msg_buf,
+                     access,
+                 ).unwrap();
+                 // todo: is there a mapping or helper func for EFError -> ErrorCode?
+            }).map_or_else(|_| Err((ErrorCode::FAIL, data)), |_| Ok(()))
+        });
+
+        self.access_scope.replace(access);
+        self.alloc_scope.replace(alloc);
+
+        res
+    }
+
+    fn add_mut_data(
+        &self,
+        data: SubSliceMut<'static, u8>,
+    ) -> Result<(), (ErrorCode, SubSliceMut<'static, u8>)>{
+        Ok(())
+    }
+
+    fn clear_data(&self){}
+
+}
+
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestHash<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_hash_client(&'l self, client: &'l dyn digest::ClientHash<B>){}
+    fn run(&'l self, digest: &'static mut [u8; B]) -> Result<(), (ErrorCode, &'static mut [u8; B])> {
+        Ok(())
+    }
+}
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestVerify<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_verify_client(&'l self, client: &'l dyn digest::ClientVerify<B>){}
+    fn verify(
+        &'l self,
+        compare: &'static mut [u8; B],
+    ) -> Result<(), (ErrorCode, &'static mut [u8; B])> {
+        Ok(())
+    }
+}
 
 /// Main function.
 ///
