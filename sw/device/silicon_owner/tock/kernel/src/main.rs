@@ -1131,6 +1131,7 @@ use kernel::utilities::leasable_buffer::SubSliceMut;
 use kernel::utilities::leasable_buffer::SubSlice;
 use kernel::ErrorCode;
 use kernel::hil::digest;
+use kernel::hil::digest::DigestHash;
 
 struct OTCryptoLibHMAC<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> {
     lib: &'l L,
@@ -1176,28 +1177,12 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, c
     fn set_client(&'l self, client: &'l dyn digest::Client<B>) {}
 }
 
-/*
- *
-                    let data = b"Hello World, this is some data to HMAC!";
-                    lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
-                        data_slice.copy_from_slice(data, &mut access);
-
-                        let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
-                            data: data_slice.as_ptr().into(),
-                            len: data_slice.len()
-                        };
-
-                        lib.otcrypto_hmac_update(
-                            hmac_context.as_ptr().into(),
-                            msg_buf,
-                            &mut access,
-                        ).unwrap();
- *
- * */
-
-
 impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestData<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
-    fn set_data_client(&'l self, client: &'l dyn digest::ClientData<B>){ }
+    fn set_data_client(&'l self, client: &'l dyn digest::ClientData<B>){
+        // we do not set a client for this (this is the lowest layer)
+        // mirroring hmac.rs in `chips/lowrisc/src`
+        unimplemented!()
+    }
     
     fn add_data(
         &self,
@@ -1234,29 +1219,160 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, c
         &self,
         data: SubSliceMut<'static, u8>,
     ) -> Result<(), (ErrorCode, SubSliceMut<'static, u8>)>{
-        Ok(())
-    }
+        // this is somewhat tricky to figure out. This should look identical 
+        // to the above add_data() method, however, the as_slice() method for
+        // SubSliceMut requires the slice be mutable (which data is not). 
+        // For now this is probably okay to just error and we can not use 
+        // it since this accomplishes for our purposes the same role since
+        Err((ErrorCode::NOSUPPORT, data))
+    }         
 
-    fn clear_data(&self){}
+    /// Clear the keys and any other internal state. Any pending
+    /// operations terminate and issue a callback with an
+    /// `ErrorCode::CANCEL`. This call does not clear buffers passed
+    /// through `add_mut_data`, those are up to the client clear.
+    fn clear_data(&self){
+        // it is not clear what internal state exists for encapsulated 
+        // functions / ot-crpyto. For now this is empty.
+    }
 
 }
 
 
 impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestHash<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
-    fn set_hash_client(&'l self, client: &'l dyn digest::ClientHash<B>){}
+    fn set_hash_client(&'l self, client: &'l dyn digest::ClientHash<B>){
+        // see comment for dataclient
+        unimplemented!()
+    }
     fn run(&'l self, digest: &'static mut [u8; B]) -> Result<(), (ErrorCode, &'static mut [u8; B])> {
+        let alloc = self.alloc_scope.take().unwrap();
+        let access = self.access_scope.take().unwrap();
+
+  
+        self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |hmac_context, alloc| {
+            self.lib.rt().allocate_stacked_t::<[u32; 256 / 32], _, _>(alloc, |tag_array, alloc| {
+                self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_word32_buf_t, _, _>(alloc, |tag_buf, _alloc| {
+                    tag_buf.write(otcrypto_mac_ef_bindings::crypto_word32_buf_t {
+                        data: tag_array.as_ptr().cast::<u32>().into(),
+                        len: 256 / 32,
+                    }, access);
+
+                    self.lib.otcrypto_hmac_final(
+                        hmac_context.as_ptr().into(),
+                        tag_buf.as_ptr().into(),
+                        access,
+                    ).unwrap();
+                }).unwrap()
+            }).unwrap();
+        }).unwrap();
+
+        self.alloc_scope.replace(alloc);
+        self.access_scope.replace(access);
         Ok(())
     }
 }
 
 impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>, const B: usize> digest::DigestVerify<'l,B> for OTCryptoLibHMAC<'l, ID, RT, L> {
-    fn set_verify_client(&'l self, client: &'l dyn digest::ClientVerify<B>){}
+    fn set_verify_client(&'l self, client: &'l dyn digest::ClientVerify<B>){
+        // see comment for dataclient
+        unimplemented!()
+    }
     fn verify(
         &'l self,
         compare: &'static mut [u8; B],
     ) -> Result<(), (ErrorCode, &'static mut [u8; B])> {
+        self.run(compare)
+    }
+}
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> hil::digest::HmacSha256 for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_mode_hmacsha256(&self, key: &[u8]) -> Result<(), ErrorCode> {
+
+        let access = self.access_scope.take().unwrap();
+        let alloc = self. alloc_scope.take().unwrap();
+
+        self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |hmac_context, alloc| {
+            // Create a key and initialize the context with that key:
+            self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_blinded_key_t, _, _>(alloc, |blinded_key, alloc| {
+                let key_config_rust = otcrypto_mac_ef_bindings::crypto_key_config {
+                    version: otcrypto_mac_ef_bindings::crypto_lib_version_kCryptoLibVersion1,
+                    key_mode: otcrypto_mac_ef_bindings::key_mode_kKeyModeHmacSha256,
+                    key_length: 32, // HMAC-SHA256
+                    hw_backed: otcrypto_mac_ef_bindings::hardened_bool_kHardenedBoolFalse,
+                    //diversification_hw_backed: otcrypto_mac_ef_bindings::crypto_const_uint8_buf_t {
+                    //    data: core::ptr::null(),
+                    //    len: 0,
+                    //},
+                    exportable: otcrypto_mac_ef_bindings::hardened_bool_kHardenedBoolFalse,
+                    security_level: otcrypto_mac_ef_bindings::crypto_key_security_level_kSecurityLevelLow,
+                };
+
+                //blinded_key_config.write(key_config_rust, &mut access);
+
+                // Create keyblob from key and mask:
+                let keyblob_words = self.lib.keyblob_num_words(key_config_rust, access)
+                    .unwrap().validate().unwrap();
+
+                self.lib.rt().allocate_stacked_slice::<u32, _, _>(keyblob_words, alloc, |keyblob, alloc| {
+                    self.lib.rt().allocate_stacked_t::<[u32; 17], _, _>(alloc, |test_mask, alloc| {
+                        test_mask.write([ 
+	                         0x8cb847c3, 0xc6d34f36, 0x72edbf7b, 0x9bc0317f, 0x8f003c7f, 0x1d7ba049,
+	                         0xfd463b63, 0xbb720c44, 0x784c215e, 0xeb101d65, 0x35beb911, 0xab481345,
+	                         0xa7ebc3e3, 0x04b2a1b9, 0x764a9630, 0x78b8f9c5, 0x3f2a1d8e,
+                        ], access);
+
+                        self.lib.rt().allocate_stacked_t::<[u32; 8], _, _>(alloc, |test_key, _alloc| {
+                            test_key.write([0; 8], access);
+
+                            self.lib.keyblob_from_key_and_mask(
+                                test_key.as_ptr().cast::<u32>().into(),
+                                test_mask.as_ptr().cast::<u32>().into(),
+                                key_config_rust,
+                                keyblob.as_ptr().into(),
+                                access,
+                            ).unwrap();
+                        }).unwrap();
+                    }).unwrap();
+
+                    debug!("EF -- Produced keyblob: {:x?}", &*keyblob.validate(access).unwrap());
+
+                    blinded_key.write(otcrypto_mac_ef_bindings::crypto_blinded_key_t {
+                        config: key_config_rust,
+                        keyblob: keyblob.as_ptr().into(),
+                        keyblob_length: keyblob_words * core::mem::size_of::<u32>(),
+                        checksum: 0,
+                    }, access);
+
+                    let checksum = self.lib.integrity_blinded_checksum(blinded_key.as_ptr().into(), access)
+                        .unwrap().validate().unwrap();
+
+                    // TODO: this should really only update the inner reference! 
+                    blinded_key.write(otcrypto_mac_ef_bindings::crypto_blinded_key_t {
+                        config: key_config_rust,
+                        keyblob: keyblob.as_ptr().into(),
+                        keyblob_length: keyblob_words * core::mem::size_of::<u32>(),
+                        checksum: checksum,
+                    }, access);
+
+
+                    // For now, I'm going to have this method init hmac too. 
+                    // We may want this elsewhere
+                    self.lib.otcrypto_hmac_init(
+                        hmac_context.as_ptr().into(),
+                        blinded_key.as_ptr().into(),
+                        access,
+                    ).unwrap();
+
+        // todo: punting on error handling for now...
+                }).unwrap();
+            }).unwrap();
+        }).unwrap();
+
+        self.access_scope.replace(access);
+        self.alloc_scope.replace(alloc);
         Ok(())
     }
+
 }
 
 /// Main function.
