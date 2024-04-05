@@ -44,6 +44,22 @@ mod otbn;
 mod pinmux_layout;
 #[cfg(test)]
 mod tests;
+    
+// Must only be constructed once, which is what we guarantee with the "unsafe impl" below:
+struct OTCryptoLibHMACID;
+unsafe impl encapfn::branding::EFID for OTCryptoLibHMACID {}
+
+type CryptolibHmacImpl = 
+        OTCryptoLibHMAC<
+            'static,
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+                'static,
+                OTCryptoLibHMACID,
+                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            >,
+        >;
 
 // Whether to check for a proper ePMP handover configuration prior to ePMP
 // initialization:
@@ -159,7 +175,7 @@ struct EarlGrey {
         'static,
         VirtualMuxAlarm<'static, earlgrey::timer::RvTimer<'static, ChipConfig>>,
     >,
-    hmac: &'static capsules_extra::hmac::HmacDriver<'static, lowrisc::hmac::Hmac<'static>, 32>,
+    hmac: &'static capsules_extra::hmac::HmacDriver<'static, CryptolibHmacImpl, 32>,
     lldb: &'static capsules_core::low_level_debug::LowLevelDebug<
         'static,
         capsules_core::virtualizers::virtual_uart::UartDevice<'static>,
@@ -496,12 +512,62 @@ unsafe fn setup() -> (
     )
     .finalize(components::low_level_debug_component_static!());
 
+    // OpenTitan CryptoLib HMAC driver:
+
+
+    // Safety relies on OTCryptoLibHMACID only being constructed once:
+    let (rt, alloc, access) = static_init!(
+        (
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            encapfn::types::AllocScope<
+                'static,
+                <encapfn::rt::mock::MockRt::<OTCryptoLibHMACID> as EncapfnRt>::AllocTracker<'static>,
+                OTCryptoLibHMACID
+            >,
+            encapfn::types::AccessScope<OTCryptoLibHMACID>,
+        ),
+        encapfn::rt::mock::MockRt::new(OTCryptoLibHMACID)
+    );
+
+    let bound_rt = static_init!(
+        otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+            'static,
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+        >,
+        otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(rt).unwrap(),
+    );
+
+    let ot_cryptolib_hmac = static_init!(
+        OTCryptoLibHMAC<
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+                'static,
+                OTCryptoLibHMACID,
+                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            >,
+        >,
+        OTCryptoLibHMAC::new(bound_rt, alloc, access)
+    );
+
     let hmac = components::hmac::HmacComponent::new(
         board_kernel,
         capsules_extra::hmac::DRIVER_NUM,
-        &peripherals.hmac,
+        ot_cryptolib_hmac,
     )
-    .finalize(components::hmac_component_static!(lowrisc::hmac::Hmac, 32));
+    .finalize(components::hmac_component_static!(
+        OTCryptoLibHMAC<
+            OTCryptoLibHMACID,
+            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
+                'static,
+                OTCryptoLibHMACID,
+                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            >,
+        >,
+        32,
+    ));
 
     let i2c_master_buffer = static_init!(
         [u8; capsules_core::i2c_master::BUFFER_LENGTH],
@@ -810,47 +876,6 @@ unsafe fn setup() -> (
     hil::symmetric_encryption::AES128GCM::set_client(gcm_client, aes);
     hil::symmetric_encryption::AES128::set_client(gcm_client, ccm_client);
 
-    // OpenTitan CryptoLib HMAC driver:
-
-    // Must only be constructed once, which is what we guarantee with the "unsafe impl" below:
-    struct OTCryptoLibHMACID;
-    unsafe impl encapfn::branding::EFID for OTCryptoLibHMACID {}
-
-    // Safety relies on OTCryptoLibHMACID only being constructed once:
-    let (rt, alloc, access) = static_init!(
-        (
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
-            encapfn::types::AllocScope<
-                'static,
-                <encapfn::rt::mock::MockRt::<OTCryptoLibHMACID> as EncapfnRt>::AllocTracker<'static>,
-                OTCryptoLibHMACID
-            >,
-            encapfn::types::AccessScope<OTCryptoLibHMACID>,
-        ),
-        encapfn::rt::mock::MockRt::new(OTCryptoLibHMACID)
-    );
-
-    let bound_rt = static_init!(
-        otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
-            'static,
-            OTCryptoLibHMACID,
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
-        >,
-        otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(rt).unwrap(),
-    );
-
-    let ot_crypotlib_hmac = static_init!(
-        OTCryptoLibHMAC<
-            OTCryptoLibHMACID,
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
-            otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
-                'static,
-                OTCryptoLibHMACID,
-                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
-            >,
-        >,
-        OTCryptoLibHMAC::new(bound_rt, alloc, access)
-    );
 
     let syscall_filter = static_init!(TbfHeaderFilterDefaultAllow, TbfHeaderFilterDefaultAllow {});
     let scheduler = components::sched::priority::PriorityComponent::new(board_kernel)
@@ -1373,6 +1398,18 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> h
         Ok(())
     }
 
+}
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> hil::digest::HmacSha384 for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_mode_hmacsha384(&self, key: &[u8]) -> Result<(), ErrorCode> {
+        unimplemented!()
+    }
+}
+
+impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> hil::digest::HmacSha512 for OTCryptoLibHMAC<'l, ID, RT, L> {
+    fn set_mode_hmacsha512(&self, key: &[u8]) -> Result<(), ErrorCode> {
+        unimplemented!()
+    }
 }
 
 /// Main function.
