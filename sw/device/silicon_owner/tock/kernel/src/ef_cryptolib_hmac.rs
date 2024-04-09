@@ -58,12 +58,12 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
     {
         let mut stored_hmac_context = self.hmac_context.borrow_mut();
         //debug!("Stored ctx pre: {:?}", &stored_hmac_context.validate_ref().unwrap());
-        let res = self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |stacked_context, alloc| {
+        let res = self.lib.rt().allocate_stacked_t_mut::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |stacked_context, alloc| {
             // Copy our copy of the context into the stacked context:
             stacked_context.write_copy(&*stored_hmac_context, access);
             let res = f(alloc, access, stacked_context);
             //debug!("Stacked ctx updated: {:?}", &*stacked_context.validate(access).unwrap());
-            stored_hmac_context.update_from_mut_ref(&stacked_context, access);
+            stored_hmac_context.update_from_mut_ref(stacked_context, access);
             res
         }).unwrap();
         //debug!("Stored ctx post: {:?}", &stored_hmac_context.validate_ref().unwrap());
@@ -78,7 +78,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
         let alloc = self.alloc_scope.take().unwrap();
 
         let res = self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
-            self.lib.rt().allocate_stacked_slice::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
+            self.lib.rt().allocate_stacked_slice_mut::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
                  data_slice.copy_from_slice(data, access);
 
                  let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
@@ -200,8 +200,8 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
         let access = self.access_scope.take().unwrap();
 
         self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
-            self.lib.rt().allocate_stacked_t::<[u32; 256 / 32], _, _>(alloc, |tag_array, alloc| {
-                self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_word32_buf_t, _, _>(alloc, |tag_buf, _alloc| {
+            self.lib.rt().allocate_stacked_t_mut::<[u32; 256 / 32], _, _>(alloc, |tag_array, alloc| {
+                self.lib.rt().allocate_stacked_t_mut::<otcrypto_mac_ef_bindings::crypto_word32_buf_t, _, _>(alloc, |tag_buf, _alloc| {
                     tag_buf.write(otcrypto_mac_ef_bindings::crypto_word32_buf_t {
                         data: tag_array.as_ptr().cast::<u32>().into(),
                         len: 256 / 32,
@@ -264,7 +264,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
         //self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |hmac_context, alloc| {
         self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
             // Create a key and initialize the context with that key:
-            self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_blinded_key_t, _, _>(alloc, |blinded_key, alloc| {
+            self.lib.rt().allocate_stacked_t_mut::<otcrypto_mac_ef_bindings::crypto_blinded_key_t, _, _>(alloc, |blinded_key, alloc| {
                 let key_config_rust = otcrypto_mac_ef_bindings::crypto_key_config {
                     version: otcrypto_mac_ef_bindings::crypto_lib_version_kCryptoLibVersion1,
                     key_mode: otcrypto_mac_ef_bindings::key_mode_kKeyModeHmacSha256,
@@ -284,15 +284,15 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
                 let keyblob_words = self.lib.keyblob_num_words(key_config_rust, access)
                     .unwrap().validate().unwrap();
 
-                self.lib.rt().allocate_stacked_slice::<u32, _, _>(keyblob_words, alloc, |keyblob, alloc| {
-                    self.lib.rt().allocate_stacked_t::<[u32; 17], _, _>(alloc, |test_mask, alloc| {
+                self.lib.rt().allocate_stacked_slice_mut::<u32, _, _>(keyblob_words, alloc, |keyblob, alloc| {
+                    self.lib.rt().allocate_stacked_t_mut::<[u32; 17], _, _>(alloc, |test_mask, alloc| {
                         test_mask.write([ 
 	                         0x8cb847c3, 0xc6d34f36, 0x72edbf7b, 0x9bc0317f, 0x8f003c7f, 0x1d7ba049,
 	                         0xfd463b63, 0xbb720c44, 0x784c215e, 0xeb101d65, 0x35beb911, 0xab481345,
 	                         0xa7ebc3e3, 0x04b2a1b9, 0x764a9630, 0x78b8f9c5, 0x3f2a1d8e,
                         ], access);
 
-                        self.lib.rt().allocate_stacked_t::<[u32; 32], _, _>(alloc, |test_key, _alloc| {
+                        self.lib.rt().allocate_stacked_t_mut::<[u32; 32], _, _>(alloc, |test_key, _alloc| {
                             key.chunks(4)
                                 .map(|chunk| {
                                     let mut ci = chunk.iter();

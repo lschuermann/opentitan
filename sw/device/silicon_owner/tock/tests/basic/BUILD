@@ -31,7 +31,8 @@ tock_elf2tab(
 tock_image(
     name = "image",
     app_flash_start = 0x20040000,
-    apps = [":tab"],
+    #apps = [":tab"],
+    apps = [],
     kernel = "//sw/device/silicon_owner/tock/tests:test_kernel",
 )
 
