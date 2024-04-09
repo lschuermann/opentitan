@@ -68,6 +68,7 @@ rust_binary(
 	"src/hmac_bench.rs",
 	"src/otcrypto_mac_ef_bindings.rs",
 	#":otcrypto_mac_bindings_src_rs",
+        "src/pinmux_layout.rs",
     ],
     rustc_flags = [
         "-g",
