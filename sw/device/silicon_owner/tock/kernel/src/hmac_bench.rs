@@ -6,7 +6,7 @@ use kernel::ErrorCode;
 use kernel::utilities::leasable_buffer::{SubSlice, SubSliceMut};
 use kernel::utilities::cells::TakeCell;
 
-const KEY_BUFFER: [u8; 32] = [42; 32];
+const KEY_BUFFER: [u8; 32] = [0; 32];
 
 pub struct HmacBench<'a, const L: usize, H: digest::Digest<'a, L>> {
     hmac: &'a H,
@@ -34,7 +34,7 @@ impl<'a, const L: usize, H: digest::Digest<'a, L> + digest::HmacSha256> HmacBenc
 
     pub fn start(&self) {
         self.hmac.set_mode_hmacsha256(&KEY_BUFFER).unwrap();
-        debug!("Set HMAC mode with key!");
+        //debug!("Set HMAC mode with key!");
         self.add_data_iter();
     }
 
@@ -42,6 +42,7 @@ impl<'a, const L: usize, H: digest::Digest<'a, L> + digest::HmacSha256> HmacBenc
         if self.add_data_cnt.get() < self.add_data_rounds {
             self.hmac.add_data(SubSlice::new(self.data_slice)).unwrap();
         } else {
+            panic!("Add data done!");
             self.hmac.run(self.hash_buf.take().unwrap()).unwrap();
         }
     }
@@ -60,7 +61,7 @@ impl<'a, const L: usize, H: digest::Digest<'a, L> + digest::HmacSha256> digest::
 
 impl<'a, const L: usize, H: digest::Digest<'a, L> + digest::HmacSha256> digest::ClientHash<L> for HmacBench<'a, L, H> {
     fn hash_done(&self, _result: Result<(), ErrorCode>, digest: &'static mut [u8; L]) {
-        unimplemented!("Hash done: {:x?}", digest);
+        debug!("Hash done: {:x?}", digest);
     }
 }
 
