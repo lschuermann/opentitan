@@ -563,8 +563,8 @@ unsafe fn setup() -> (
         hmac_bench::HmacBench<'static, 32, CryptolibHmacImpl>,
         hmac_bench::HmacBench::new(
             ot_cryptolib_hmac,
-            &[0xab; 256],
-            16,
+            &[42; 512],
+            256,
             digest_buf,
         ),
     );

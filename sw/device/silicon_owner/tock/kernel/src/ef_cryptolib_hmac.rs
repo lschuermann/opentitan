@@ -57,13 +57,17 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
         ) -> R
     {
         let mut stored_hmac_context = self.hmac_context.borrow_mut();
-        self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |stacked_context, alloc| {
+        //debug!("Stored ctx pre: {:?}", &stored_hmac_context.validate_ref().unwrap());
+        let res = self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |stacked_context, alloc| {
             // Copy our copy of the context into the stacked context:
             stacked_context.write_copy(&*stored_hmac_context, access);
             let res = f(alloc, access, stacked_context);
+            //debug!("Stacked ctx updated: {:?}", &*stacked_context.validate(access).unwrap());
             stored_hmac_context.update_from_mut_ref(&stacked_context, access);
             res
-        }).unwrap()
+        }).unwrap();
+        //debug!("Stored ctx post: {:?}", &stored_hmac_context.validate_ref().unwrap());
+        res
     }
 
     fn add_data_int(
@@ -81,6 +85,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
                      data: data_slice.as_ptr().into(),
                      len: data_slice.len()
                  };
+                 //panic!("Adding msg buf: {}, {}, {:x?}, {:?}", data.len(), data_slice.len(), &msg_buf, &*data_slice.validate(access).unwrap());
 
                  self.lib.otcrypto_hmac_update(
                      hmac_context.as_ptr().into(),
@@ -213,7 +218,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
 
                     // Copy the validated array's contents into the digest buffer,
                     // converting the u32s to u8s in the process:
-                    panic!("Hash done tag_array_val: {:x?}", &*tag_array_val);
+                    //panic!("Hash done tag_array_val: {:x?}", &*tag_array_val);
                     tag_array_val
                         .iter()
                         .flat_map(|w| u32::to_be_bytes(*w))
@@ -256,7 +261,8 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
         let access = self.access_scope.take().unwrap();
         let alloc = self. alloc_scope.take().unwrap();
 
-        self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |hmac_context, alloc| {
+        //self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::hmac_context_t, _, _>(alloc, |hmac_context, alloc| {
+        self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
             // Create a key and initialize the context with that key:
             self.lib.rt().allocate_stacked_t::<otcrypto_mac_ef_bindings::crypto_blinded_key_t, _, _>(alloc, |blinded_key, alloc| {
                 let key_config_rust = otcrypto_mac_ef_bindings::crypto_key_config {
@@ -310,7 +316,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
                         }).unwrap();
                     }).unwrap();
 
-                    debug!("EF -- Produced keyblob: {:x?}", &*keyblob.validate(access).unwrap());
+                    //debug!("EF -- Produced keyblob: {:x?}", &*keyblob.validate(access).unwrap());
 
                     blinded_key.write(otcrypto_mac_ef_bindings::crypto_blinded_key_t {
                         config: key_config_rust,
@@ -329,6 +335,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
                         keyblob_length: keyblob_words * core::mem::size_of::<u32>(),
                         checksum: checksum,
                     }, access);
+                    //debug!("Blinded checksummed key: {:?}", &*blinded_key.validate(access).unwrap());
 
 
                     // For now, I'm going to have this method init hmac too. 
@@ -342,7 +349,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
                     // todo: punting on error handling for now...
                 }).unwrap();
             }).unwrap();
-        }).unwrap();
+        });
 
         self.access_scope.replace(access);
         self.alloc_scope.replace(alloc);
