@@ -42,7 +42,7 @@ impl<'a, const L: usize, H: digest::Digest<'a, L> + digest::HmacSha256> HmacBenc
         if self.add_data_cnt.get() < self.add_data_rounds {
             self.hmac.add_data(SubSlice::new(self.data_slice)).unwrap();
         } else {
-            panic!("Add data done!");
+            //panic!("Add data done!");
             self.hmac.run(self.hash_buf.take().unwrap()).unwrap();
         }
     }

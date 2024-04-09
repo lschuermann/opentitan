@@ -54,15 +54,21 @@ use ef_cryptolib_hmac::OTCryptoLibHMAC;
 struct OTCryptoLibHMACID;
 unsafe impl encapfn::branding::EFID for OTCryptoLibHMACID {}
 
+type OTEncapfnRt = encapfn::rt::mock::MockRt<OTCryptoLibHMACID>;
+//type OTEncapfnRt = encapfn_tock::rv32i_c_rt::TockRv32iCRt<
+//    OTCryptoLibHMACID,
+//    <EarlGreyChip as kernel::platform::chip::Chip>::MPU,
+//>;
+
 type CryptolibHmacImpl = 
         OTCryptoLibHMAC<
             'static,
             OTCryptoLibHMACID,
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            OTEncapfnRt,
             otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
                 'static,
                 OTCryptoLibHMACID,
-                encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+                OTEncapfnRt,
             >,
         >;
 
@@ -270,6 +276,49 @@ unsafe fn setup() -> (
     &'static earlgrey::chip::EarlGrey<'static, EarlGreyDefaultPeripherals<'static, ChipConfig>, ChipConfig>,
     &'static EarlGreyDefaultPeripherals<'static, ChipConfig>,
 ) {
+    // These symbols are defined in the linker script.
+    extern "C" {
+        /// Beginning of the ROM region containing app images.
+        static _sapps: u8;
+        /// End of the ROM region containing app images.
+        static _eapps: u8;
+        /// Beginning of the RAM region for app memory.
+        static mut _sappmem: u8;
+        /// End of the RAM region for app memory.
+        static _eappmem: u8;
+        /// The start of the kernel stack (Included only for kernel PMP)
+        static _sstack: u8;
+        /// The end of the kernel stack (Included only for kernel PMP)
+        static _estack: u8;
+        /// The start of the kernel text (Included only for kernel PMP)
+        static _stext: u8;
+        /// The end of the kernel text (Included only for kernel PMP)
+        static _etext: u8;
+        /// The start of the kernel relocation region
+        /// (Included only for kernel PMP)
+        static _srelocate: u8;
+        /// The end of the kernel relocation region
+        /// (Included only for kernel PMP)
+        static _erelocate: u8;
+        /// The start of the kernel BSS (Included only for kernel PMP)
+        static _szero: u8;
+        /// The end of the kernel BSS (Included only for kernel PMP)
+        static _ezero: u8;
+        /// The start of the kernel / app / storage flash (Included only for kernel PMP)
+        static _sflash: u8;
+        /// The end of the kernel / app / storage flash (Included only for kernel PMP)
+        static _eflash: u8;
+        /// The start of the kernel / app RAM (Included only for kernel PMP)
+        static _ssram: u8;
+        /// The end of the kernel / app RAM (Included only for kernel PMP)
+        static _esram: u8;
+        /// The start of the OpenTitan manifest
+        static _manifest: u8;
+
+        static _efram_start: u8;
+        static _efram_end: u32;
+    }
+
     // Ibex-specific handler
     earlgrey::chip::configure_trap_handler();
 
@@ -413,22 +462,53 @@ unsafe fn setup() -> (
     // Safety relies on OTCryptoLibHMACID only being constructed once:
     let (rt, alloc, access) = static_init!(
         (
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            OTEncapfnRt,
             encapfn::types::AllocScope<
                 'static,
-                <encapfn::rt::mock::MockRt::<OTCryptoLibHMACID> as EncapfnRt>::AllocTracker<'static>,
+                <OTEncapfnRt as EncapfnRt>::AllocTracker<'static>,
                 OTCryptoLibHMACID
             >,
             encapfn::types::AccessScope<OTCryptoLibHMACID>,
         ),
         encapfn::rt::mock::MockRt::new(false, OTCryptoLibHMACID)
     );
+    // Try to load the efdemo Encapsulated Functions TBF binary:
+    //let ef_cryptolib_binary = encapfn_tock::binary::EncapfnBinary::find(
+    //    "ef_cryptolib",
+    //    core::slice::from_raw_parts(
+    //        &_sapps as *const u8,
+    //        &_eapps as *const u8 as usize - &_sapps as *const u8 as usize,
+    //    ),
+    //)
+    //.unwrap();
+
+    //// This is unsafe, as it instantiates a runtime that can be used to run
+    //// foreign functions without memory protection:
+    //let (rt, alloc, access) = static_init!(
+    //    (
+    //        OTEncapfnRt,
+    //        encapfn::types::AllocScope<
+    //            'static,
+    //            <OTEncapfnRt as EncapfnRt>::AllocTracker<'static>,
+    //            OTCryptoLibHMACID
+    //        >,
+    //        encapfn::types::AccessScope<OTCryptoLibHMACID>,
+    //    ),
+    //    encapfn_tock::rv32i_c_rt::TockRv32iCRt::new(
+    //        kernel::platform::chip::Chip::mpu(chip),
+    //        ef_cryptolib_binary,
+    //        core::ptr::addr_of!(_efram_start) as *const () as *mut (),
+    //        core::ptr::addr_of!(_efram_end) as usize
+    //            - core::ptr::addr_of!(_efram_start) as usize,
+    //        OTCryptoLibHMACID,
+    //    ).unwrap(),
+    //);
 
     let bound_rt = static_init!(
         otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
             'static,
             OTCryptoLibHMACID,
-            encapfn::rt::mock::MockRt::<OTCryptoLibHMACID>,
+            OTEncapfnRt,
         >,
         otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(rt).unwrap(),
     );
@@ -446,7 +526,7 @@ unsafe fn setup() -> (
         hmac_bench::HmacBench::new(
             ot_cryptolib_hmac,
             &[42; 512],
-            256,
+            1,
             digest_buf,
         ),
     );
@@ -902,7 +982,7 @@ unsafe fn setup() -> (
         debug!("Error loading processes!");
         debug!("{:?}", err);
     });
-    debug!("OpenTitan (downstream) initialisation complete. Entering main loop");
+    debug!("OpenTitan (downstream) initialisation complete. Entering main loop ");
 
     hmac_bench.start(); 
 
