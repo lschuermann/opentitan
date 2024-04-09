@@ -32,7 +32,9 @@ tock_image(
     name = "image",
     app_flash_start = 0x20040000,
     #apps = [":tab"],
-    apps = [],
+    apps = [
+        "//sw/device/silicon_owner/tock/ef_cryptolib",	
+    ],
     kernel = "//sw/device/silicon_owner/tock/tests:test_kernel",
 )
 

@@ -148,55 +148,55 @@ impl<ID: ::encapfn::branding::EFID>
         }))
     }
 }
-trait LibOTCryptoMACSysVAMD64Rt:
-    ::encapfn::rt::EncapfnRt<ABI = ::encapfn::abi::sysv_amd64::SysVAMD64ABI>
-    + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+trait LibOTCryptoMACRv32iCRt:
+    ::encapfn::rt::EncapfnRt<ABI = ::encapfn::abi::rv32i_c::Rv32iCABI>
+    + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-    > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-    > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-    > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-    > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-    > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
-        ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+        ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
     >
 {
 }
 impl<
-        RT: ::encapfn::rt::EncapfnRt<ABI = ::encapfn::abi::sysv_amd64::SysVAMD64ABI>
-            + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+        RT: ::encapfn::rt::EncapfnRt<ABI = ::encapfn::abi::rv32i_c::Rv32iCABI>
+            + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-            > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-            > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+                ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-            > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-            > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
-            > + ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
-    > LibOTCryptoMACSysVAMD64Rt for RT
+    > LibOTCryptoMACRv32iCRt for RT
 {
 }
-impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
-    LibOTCryptoMAC<ID, RT, ::encapfn::abi::sysv_amd64::SysVAMD64ABI>
+impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
+    LibOTCryptoMAC<ID, RT, ::encapfn::abi::rv32i_c::Rv32iCABI>
     for LibOTCryptoMACRt<'_, ID, RT>
 {
     type RT = RT;
@@ -212,9 +212,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<crypto_status_t> {
         #[naked]
         unsafe extern "C" fn otcrypto_hmac_init_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             ctx: *mut hmac_context_t,
@@ -223,18 +223,18 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<crypto_status_t>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 0", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
         let ef_sym = self.rt().lookup_symbol(3usize, &self.symbols).unwrap();
-        let mut ef_res = <<RT as ::encapfn::rt::sysv_amd64::SysVAMD64BaseRt>::InvokeRes<
+        let mut ef_res = <<RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<
             crypto_status_t,
-        > as ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes<RT, crypto_status_t>>::new(
+        > as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, crypto_status_t>>::new(
         );
         let ef_res_borrowed = &mut ef_res;
         self.rt().execute(move || unsafe {
             otcrypto_hmac_init_int::<RT>(ctx, key, self.rt(), ef_sym, ef_res_borrowed);
         });
-        ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes::<RT, crypto_status_t>::into_result_registers(
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, crypto_status_t>::into_result_registers(
             ef_res,
             self.rt(),
         )
@@ -248,9 +248,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<crypto_status_t> {
         #[naked]
         unsafe extern "C" fn otcrypto_hmac_update_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             ctx: *mut hmac_context_t,
@@ -259,18 +259,18 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<crypto_status_t>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 1", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(2usize, &self.symbols).unwrap();
-        let mut ef_res = <<RT as ::encapfn::rt::sysv_amd64::SysVAMD64BaseRt>::InvokeRes<
+        let ef_sym = self.rt().lookup_symbol(4usize, &self.symbols).unwrap();
+        let mut ef_res = <<RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<
             crypto_status_t,
-        > as ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes<RT, crypto_status_t>>::new(
+        > as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, crypto_status_t>>::new(
         );
         let ef_res_borrowed = &mut ef_res;
         self.rt().execute(move || unsafe {
             otcrypto_hmac_update_int::<RT>(ctx, input_message, self.rt(), ef_sym, ef_res_borrowed);
         });
-        ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes::<RT, crypto_status_t>::into_result_registers(
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, crypto_status_t>::into_result_registers(
             ef_res,
             self.rt(),
         )
@@ -284,9 +284,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<crypto_status_t> {
         #[naked]
         unsafe extern "C" fn otcrypto_hmac_final_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG2<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             ctx: *mut hmac_context_t,
@@ -295,18 +295,18 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<crypto_status_t>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 2", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(4usize, &self.symbols).unwrap();
-        let mut ef_res = <<RT as ::encapfn::rt::sysv_amd64::SysVAMD64BaseRt>::InvokeRes<
+        let ef_sym = self.rt().lookup_symbol(5usize, &self.symbols).unwrap();
+        let mut ef_res = <<RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<
             crypto_status_t,
-        > as ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes<RT, crypto_status_t>>::new(
+        > as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, crypto_status_t>>::new(
         );
         let ef_res_borrowed = &mut ef_res;
         self.rt().execute(move || unsafe {
             otcrypto_hmac_final_int::<RT>(ctx, tag, self.rt(), ef_sym, ef_res_borrowed);
         });
-        ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes::<RT, crypto_status_t>::into_result_registers(
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, crypto_status_t>::into_result_registers(
             ef_res,
             self.rt(),
         )
@@ -319,9 +319,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<usize> {
         #[naked]
         unsafe extern "C" fn keyblob_num_words_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             config: *const crypto_key_config_t,
@@ -329,9 +329,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<usize>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 3", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        self . rt () . allocate_stacked_untracked_mut (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (0usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < usize > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , usize > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_num_words_int :: < RT > (config , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , usize > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
+        self . rt () . allocate_stacked_untracked_mut (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (0usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: rv32i_c :: Rv32iCBaseRt > :: InvokeRes < usize > as :: encapfn :: rt :: rv32i_c :: Rv32iCInvokeRes < RT , usize > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_num_words_int :: < RT > (config , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: rv32i_c :: Rv32iCInvokeRes :: < RT , usize > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
     }
     #[inline]
     fn keyblob_from_key_and_mask(
@@ -344,9 +344,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<status_t> {
         #[naked]
         unsafe extern "C" fn keyblob_from_key_and_mask_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG4<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             key: *const u32,
@@ -357,9 +357,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<status_t>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 4", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        self . rt () . allocate_stacked_untracked_mut (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (1usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < status_t > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , status_t > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_from_key_and_mask_int :: < RT > (key , mask , config , keyblob , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes :: < RT , status_t > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
+        self . rt () . allocate_stacked_untracked_mut (:: core :: alloc :: Layout :: new :: < crypto_key_config_t > () , move | config_pbrptr : * mut u8 | { unsafe { :: core :: ptr :: write (config_pbrptr as * mut crypto_key_config_t , config) } ; let config : * const crypto_key_config_t = config_pbrptr as * mut crypto_key_config_t as * const _ ; let ef_sym = self . rt () . lookup_symbol (1usize , & self . symbols) . unwrap () ; let mut ef_res = < < RT as :: encapfn :: rt :: rv32i_c :: Rv32iCBaseRt > :: InvokeRes < status_t > as :: encapfn :: rt :: rv32i_c :: Rv32iCInvokeRes < RT , status_t > > :: new () ; let ef_res_borrowed = & mut ef_res ; self . rt () . execute (move || { unsafe { keyblob_from_key_and_mask_int :: < RT > (key , mask , config , keyblob , self . rt () , ef_sym , ef_res_borrowed ,) ; } }) ; :: encapfn :: rt :: rv32i_c :: Rv32iCInvokeRes :: < RT , status_t > :: into_result_registers (ef_res , self . rt ()) } ,) . unwrap ()
     }
     #[inline]
     fn integrity_blinded_checksum(
@@ -369,9 +369,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
     ) -> ::encapfn::EFResult<u32> {
         #[naked]
         unsafe extern "C" fn integrity_blinded_checksum_int<
-            RT: ::encapfn::rt::sysv_amd64::SysVAMD64Rt<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
-                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::sysv_amd64::SysVAMD64ABI>,
+                ::encapfn::abi::calling_convention::AREG1<::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             key: *const crypto_blinded_key_t,
@@ -379,15 +379,15 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACSysVAMD64Rt<ID = ID>>
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<u32>,
         ) {
-            core :: arch :: asm ! ("lea r10, [rip + {invoke}]" , "jmp r10" , invoke = sym RT :: invoke , options (noreturn) ,);
+            core :: arch :: asm ! ("la t0, {invoke}", "li t6, 5", "jr t0" , invoke = sym RT :: invoke , options (noreturn) ,);
         }
-        let ef_sym = self.rt().lookup_symbol(5usize, &self.symbols).unwrap();
-        let mut ef_res = < < RT as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64BaseRt > :: InvokeRes < u32 > as :: encapfn :: rt :: sysv_amd64 :: SysVAMD64InvokeRes < RT , u32 > > :: new () ;
+        let ef_sym = self.rt().lookup_symbol(2usize, &self.symbols).unwrap();
+        let mut ef_res = < < RT as :: encapfn :: rt :: rv32i_c :: Rv32iCBaseRt > :: InvokeRes < u32 > as :: encapfn :: rt :: rv32i_c :: Rv32iCInvokeRes < RT , u32 > > :: new () ;
         let ef_res_borrowed = &mut ef_res;
         self.rt().execute(move || unsafe {
             integrity_blinded_checksum_int::<RT>(key, self.rt(), ef_sym, ef_res_borrowed);
         });
-        ::encapfn::rt::sysv_amd64::SysVAMD64InvokeRes::<RT, u32>::into_result_registers(
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, u32>::into_result_registers(
             ef_res,
             self.rt(),
         )

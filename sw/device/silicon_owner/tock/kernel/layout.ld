@@ -14,7 +14,8 @@ MEMORY
    * and 0x2009_0000 to 0x2010_0000 is for flash storage.
    */
   prog  (rx)  : ORIGIN = 0x20040000, LENGTH = 0x60000
-  ram   (!rx) : ORIGIN = 0x10000000, LENGTH = 0x20000
+  ram   (!rx) : ORIGIN = 0x10000000, LENGTH = 0x10000
+  efram (!rx) : ORIGIN = 0x10010000, LENGTH = 0x10000
 }
 
 SECTIONS {
@@ -28,6 +29,9 @@ SECTIONS {
 
     _ssram  = ORIGIN(ram);
     _esram  = ORIGIN(ram) + LENGTH(ram);
+
+    _efram_start = ORIGIN(efram);
+    _efram_end   = ORIGIN(efram) + LENGTH(efram);
 
     .manifest ORIGIN(rom):
     {
