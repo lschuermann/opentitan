@@ -47,12 +47,6 @@ mod tests;
 
 use encapfn::rt::EncapfnRt;
 
-// otcrypto mac.h bindings, automatically generated:
-#[allow(non_upper_case_globals)]
-#[allow(dead_code)]
-#[allow(non_camel_case_types)]
-mod otcrypto_mac_ef_bindings;
-
 pub mod ef_cryptolib_hmac;
 use ef_cryptolib_hmac::OTCryptoLibHMAC;
 
@@ -132,7 +126,7 @@ const FAULT_RESPONSE: kernel::process::PanicFaultPolicy = kernel::process::Panic
 /// Dummy buffer that causes the linker to reserve enough space for the stack.
 #[no_mangle]
 #[link_section = ".stack_buffer"]
-pub static mut STACK_MEMORY: [u8; 0x1400] = [0; 0x1400];
+pub static mut STACK_MEMORY: [u8; 0x4000] = [0; 0x4000];
 
 enum ChipConfig {}
 impl EarlGreyConfig for ChipConfig {
@@ -427,7 +421,7 @@ unsafe fn setup() -> (
             >,
             encapfn::types::AccessScope<OTCryptoLibHMACID>,
         ),
-        encapfn::rt::mock::MockRt::new(OTCryptoLibHMACID)
+        encapfn::rt::mock::MockRt::new(false, OTCryptoLibHMACID)
     );
 
     let bound_rt = static_init!(

@@ -154,7 +154,7 @@ def tock_repos(tock = None, libtock = None, elf2tab = None):
                 ],
             ),
             "encapfn-tock/BUILD": crate_build(
-                name = "encapfn",
+                name = "encapfn-tock",
                 deps = [
                     "//encapfn/encapfn",
                     "//kernel",
