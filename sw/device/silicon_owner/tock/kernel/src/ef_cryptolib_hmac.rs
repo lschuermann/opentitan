@@ -62,7 +62,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
             // Copy our copy of the context into the stacked context:
             stacked_context.write_copy(&*stored_hmac_context, access);
             let res = f(alloc, access, stacked_context);
-            debug!("Stacked ctx updated: {:p} {:?}", <_ as Into<*const _>>::into(stacked_context.as_ptr()), &*stacked_context.validate(access).unwrap());
+            //debug!("Stacked ctx updated: {:p} {:?}", <_ as Into<*const _>>::into(stacked_context.as_ptr()), &*stacked_context.validate(access).unwrap());
             stored_hmac_context.update_from_mut_ref(stacked_context, access);
             res
         }).unwrap();
@@ -345,7 +345,7 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> d
                         blinded_key.as_ptr().into(),
                         access,
                     ).unwrap();
-                    panic!("HMAC init res: {:?}", res.validate().unwrap());
+                    //panic!("HMAC init res: {:?}", res.validate().unwrap());
 
                     // todo: punting on error handling for now...
                 }).unwrap();

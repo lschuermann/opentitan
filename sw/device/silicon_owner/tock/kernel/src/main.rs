@@ -45,6 +45,7 @@ mod pinmux_layout;
 #[cfg(test)]
 mod tests;
 
+mod otcrypto_mac_ef_bindings;
 use encapfn::rt::EncapfnRt;
 
 pub mod ef_cryptolib_hmac;
@@ -54,11 +55,11 @@ use ef_cryptolib_hmac::OTCryptoLibHMAC;
 struct OTCryptoLibHMACID;
 unsafe impl encapfn::branding::EFID for OTCryptoLibHMACID {}
 
-type OTEncapfnRt = encapfn::rt::mock::MockRt<OTCryptoLibHMACID>;
-//type OTEncapfnRt = encapfn_tock::rv32i_c_rt::TockRv32iCRt<
-//    OTCryptoLibHMACID,
-//    <EarlGreyChip as kernel::platform::chip::Chip>::MPU,
-//>;
+//type OTEncapfnRt = encapfn::rt::mock::MockRt<OTCryptoLibHMACID>;
+type OTEncapfnRt = encapfn_tock::rv32i_c_rt::TockRv32iCRt<
+    OTCryptoLibHMACID,
+    <EarlGreyChip as kernel::platform::chip::Chip>::MPU,
+>;
 
 type CryptolibHmacImpl = 
         OTCryptoLibHMAC<
@@ -526,30 +527,6 @@ unsafe fn setup() -> (
 
 
     // Safety relies on OTCryptoLibHMACID only being constructed once:
-    let (rt, alloc, access) = static_init!(
-        (
-            OTEncapfnRt,
-            encapfn::types::AllocScope<
-                'static,
-                <OTEncapfnRt as EncapfnRt>::AllocTracker<'static>,
-                OTCryptoLibHMACID
-            >,
-            encapfn::types::AccessScope<OTCryptoLibHMACID>,
-        ),
-        encapfn::rt::mock::MockRt::new(false, OTCryptoLibHMACID)
-    );
-    // Try to load the efdemo Encapsulated Functions TBF binary:
-    //let ef_cryptolib_binary = encapfn_tock::binary::EncapfnBinary::find(
-    //    "ef_cryptolib",
-    //    core::slice::from_raw_parts(
-    //        &_sapps as *const u8,
-    //        &_eapps as *const u8 as usize - &_sapps as *const u8 as usize,
-    //    ),
-    //)
-    //.unwrap();
-
-    //// This is unsafe, as it instantiates a runtime that can be used to run
-    //// foreign functions without memory protection:
     //let (rt, alloc, access) = static_init!(
     //    (
     //        OTEncapfnRt,
@@ -560,15 +537,39 @@ unsafe fn setup() -> (
     //        >,
     //        encapfn::types::AccessScope<OTCryptoLibHMACID>,
     //    ),
-    //    encapfn_tock::rv32i_c_rt::TockRv32iCRt::new(
-    //        kernel::platform::chip::Chip::mpu(chip),
-    //        ef_cryptolib_binary,
-    //        core::ptr::addr_of!(_efram_start) as *const () as *mut (),
-    //        core::ptr::addr_of!(_efram_end) as usize
-    //            - core::ptr::addr_of!(_efram_start) as usize,
-    //        OTCryptoLibHMACID,
-    //    ).unwrap(),
+    //    encapfn::rt::mock::MockRt::new(false, OTCryptoLibHMACID)
     //);
+    // Try to load the efdemo Encapsulated Functions TBF binary:
+    let ef_cryptolib_binary = encapfn_tock::binary::EncapfnBinary::find(
+        "ef_cryptolib",
+        core::slice::from_raw_parts(
+            &_sapps as *const u8,
+            &_eapps as *const u8 as usize - &_sapps as *const u8 as usize,
+        ),
+    )
+    .unwrap();
+
+    // This is unsafe, as it instantiates a runtime that can be used to run
+    // foreign functions without memory protection:
+    let (rt, alloc, access) = static_init!(
+        (
+            OTEncapfnRt,
+            encapfn::types::AllocScope<
+                'static,
+                <OTEncapfnRt as EncapfnRt>::AllocTracker<'static>,
+                OTCryptoLibHMACID
+            >,
+            encapfn::types::AccessScope<OTCryptoLibHMACID>,
+        ),
+        encapfn_tock::rv32i_c_rt::TockRv32iCRt::new(
+            kernel::platform::chip::Chip::mpu(chip),
+            ef_cryptolib_binary,
+            core::ptr::addr_of!(_efram_start) as *const () as *mut (),
+            core::ptr::addr_of!(_efram_end) as usize
+                - core::ptr::addr_of!(_efram_start) as usize,
+            OTCryptoLibHMACID,
+        ).unwrap(),
+    );
 
     let bound_rt = static_init!(
         otcrypto_mac_ef_bindings::LibOTCryptoMACRt<
@@ -592,7 +593,7 @@ unsafe fn setup() -> (
         hmac_bench::HmacBench::new(
             ot_cryptolib_hmac,
             &[42; 512],
-            1,
+            256,
             digest_buf,
         ),
     );
