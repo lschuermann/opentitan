@@ -159,19 +159,39 @@ int testclib_add(int a, int b) {
 // 					    crypto_const_uint8_buf_t *input_message) {
 //   return otcrypto_hmac_update(ctx, *input_message);
 // }
- 
+
+void demo_nop(void) {
+	return;
+}
+
+void demo_nop_10args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4,
+	size_t a5,
+	size_t a6,
+	size_t a7,
+	size_t s0,
+	size_t s1
+) {
+	return;
+}
   
 typedef void (*fnptr)(void);
 
 fnptr const
 __attribute__ ((section (".encapfn_hdr")))
-encapfn_fntab[6] = {
+encapfn_fntab[8] = {
   (fnptr) keyblob_num_words,         
   (fnptr) keyblob_from_key_and_mask, 
   (fnptr) integrity_blinded_checksum,
   (fnptr) otcrypto_hmac_init,        
   (fnptr) otcrypto_hmac_update,      
   (fnptr) otcrypto_hmac_final,       
+  (fnptr) demo_nop,       
+  (fnptr) demo_nop_10args,       
 };
 
 __attribute__ ((section (".encapfn_hdr")))

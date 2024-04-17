@@ -65,6 +65,7 @@ rust_binary(
         "src/main.rs",
         "src/otbn.rs",
 	"src/ef_cryptolib_hmac.rs",
+	"src/native_cryptolib_hmac.rs",
 	"src/hmac_bench.rs",
 	"src/otcrypto_mac_ef_bindings.rs",
         "src/pinmux_layout.rs",

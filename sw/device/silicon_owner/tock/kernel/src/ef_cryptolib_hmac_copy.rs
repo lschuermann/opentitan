@@ -78,25 +78,28 @@ impl<'l, ID: EFID, RT: EncapfnRt<ID = ID>, L: LibOTCryptoMAC<ID, RT, RT = RT>> O
         let alloc = self.alloc_scope.take().unwrap();
 
         let res = self.with_hmac_context(alloc, access, |alloc, access, hmac_context| {
-            let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
-                data: data as *const _ as *const _,
-                len: data.len()
-            };
-            //panic!("Adding msg buf: {}, {}, {:x?}, {:?}", data.len(), data_slice.len(), &msg_buf, &*data_slice.validate(access).unwrap());
+            self.lib.rt().allocate_stacked_slice_mut::<u8, _, _>(data.len(), alloc, |data_slice, alloc| {
+                 data_slice.copy_from_slice(data, access);
 
-            self.lib.otcrypto_hmac_update(
-                hmac_context.as_ptr().into(),
-                msg_buf,
-                access,
-            ).unwrap();
+                 let msg_buf = otcrypto_mac_ef_bindings::crypto_const_byte_buf_t {
+                     data: data_slice.as_ptr().into(),
+                     len: data_slice.len()
+                 };
+                 //panic!("Adding msg buf: {}, {}, {:x?}, {:?}", data.len(), data_slice.len(), &msg_buf, &*data_slice.validate(access).unwrap());
+
+                 self.lib.otcrypto_hmac_update(
+                     hmac_context.as_ptr().into(),
+                     msg_buf,
+                     access,
+                 ).unwrap();
+            })
         });
         
         self.access_scope.replace(access);
         self.alloc_scope.replace(alloc);
 
         // todo: is there a mapping or helper func for EFError -> ErrorCode?
-        //res.map_err(|_| ErrorCode::FAIL)
-        Ok(())
+        res.map_err(|_| ErrorCode::FAIL)
     }
 }
 

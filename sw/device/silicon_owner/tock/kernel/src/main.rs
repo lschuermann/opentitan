@@ -45,11 +45,12 @@ mod pinmux_layout;
 #[cfg(test)]
 mod tests;
 
+#[allow(non_camel_case_types)]
 mod otcrypto_mac_ef_bindings;
 use encapfn::rt::EncapfnRt;
 
 pub mod ef_cryptolib_hmac;
-use ef_cryptolib_hmac::OTCryptoLibHMAC;
+pub mod native_cryptolib_hmac;
 
 // Must only be constructed once, which is what we guarantee with the "unsafe impl" below:
 struct OTCryptoLibHMACID;
@@ -62,7 +63,7 @@ type OTEncapfnRt = encapfn_tock::rv32i_c_rt::TockRv32iCRt<
 >;
 
 type CryptolibHmacImpl = 
-        OTCryptoLibHMAC<
+        ef_cryptolib_hmac::OTCryptoLibHMAC<
             'static,
             OTCryptoLibHMACID,
             OTEncapfnRt,
@@ -72,6 +73,7 @@ type CryptolibHmacImpl =
                 OTEncapfnRt,
             >,
         >;
+//type CryptolibHmacImpl = native_cryptolib_hmac::OTCryptoLibHMAC<'static>;
 
 pub mod hmac_bench;
 
@@ -580,24 +582,30 @@ unsafe fn setup() -> (
         otcrypto_mac_ef_bindings::LibOTCryptoMACRt::new(rt).unwrap(),
     );
 
-    let ot_cryptolib_hmac = static_init!(
-        CryptolibHmacImpl,
-        OTCryptoLibHMAC::new(bound_rt, alloc, access)
-    );
-    kernel::deferred_call::DeferredCallClient::register(ot_cryptolib_hmac);
+    // SwitchImpls:
+    //let ot_cryptolib_hmac = static_init!(
+    //    CryptolibHmacImpl,
+    //    ef_cryptolib_hmac::OTCryptoLibHMAC::new(bound_rt, alloc, access)
+    //);
+    //let ot_cryptolib_hmac = static_init!(
+    //    CryptolibHmacImpl,
+    //    native_cryptolib_hmac::OTCryptoLibHMAC::new()
+    //);
+    //kernel::deferred_call::DeferredCallClient::register(ot_cryptolib_hmac);
 
-    let digest_buf = static_init!([u8; 32], [0xff; 32]);
+    //let digest_buf = static_init!([u8; 32], [0xff; 32]);
 
-    let hmac_bench = static_init!(
-        hmac_bench::HmacBench<'static, 32, CryptolibHmacImpl>,
-        hmac_bench::HmacBench::new(
-            ot_cryptolib_hmac,
-            &[42; 512],
-            256,
-            digest_buf,
-        ),
-    );
-    kernel::hil::digest::Digest::set_client(ot_cryptolib_hmac, hmac_bench);
+    //let hmac_bench = static_init!(
+    //    hmac_bench::HmacBench<'static, 32, CryptolibHmacImpl, earlgrey::timer::RvTimer<'_, ChipConfig>>,
+    //    hmac_bench::HmacBench::new(
+    //        ot_cryptolib_hmac,
+    //        &[42; 512],
+    //        256,
+    //        digest_buf,
+    //        hardware_alarm,
+    //    ),
+    //);
+    //kernel::hil::digest::Digest::set_client(ot_cryptolib_hmac, hmac_bench);
     
 
     //let hmac = components::hmac::HmacComponent::new(
@@ -856,7 +864,7 @@ unsafe fn setup() -> (
         peripherals.otbn.set_client(rsa_hardware);
         RSA_HARDWARE = Some(rsa_hardware);
     } else {
-        debug!("Unable to find otbn-rsa, disabling RSA support");
+        //debug!("Unable to find otbn-rsa, disabling RSA support");
     }
 
     // Convert hardware RNG to the Random interface.
@@ -970,9 +978,156 @@ unsafe fn setup() -> (
         debug!("Error loading processes!");
         debug!("{:?}", err);
     });
-    debug!("OpenTitan (downstream) initialisation complete. Entering main loop ");
+    //debug!("OpenTitan (downstream) initialisation complete. Entering main loop ");
 
-    hmac_bench.start(); 
+    //hmac_bench.start(); 
+
+    // ----------- Microbenchmarks
+    use kernel::hil::time::Time;
+    use crate::otcrypto_mac_ef_bindings::LibOTCryptoMAC;
+    
+    // Timer test nop slide:
+    const NOP_SLIDE_ITERS: usize = 100_000;
+    let nop_slide_start_time = hardware_alarm.now();
+    for _ in 0..NOP_SLIDE_ITERS {
+        // 1000 nop instructions:
+        core::arch::asm!(
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            // 100
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+            "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop", "nop",
+        );
+    }
+    let nop_slide_end_time = hardware_alarm.now();
+
+    // Nop call:
+    const DEMO_NOP_ITERS: usize = 1_000_000;
+    let demo_nop_start_time = hardware_alarm.now();
+    for _ in 0..DEMO_NOP_ITERS {
+        bound_rt.demo_nop(access).unwrap();
+    }
+    let demo_nop_end_time = hardware_alarm.now();
+
+    // Nop 10 arg call:
+    const DEMO_NOP_10ARG_ITERS: usize = 1_000_000;
+    let demo_nop_10args_start_time = hardware_alarm.now();
+    for _ in 0..DEMO_NOP_10ARG_ITERS {
+        bound_rt.demo_nop_10args(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, access).unwrap();
+    }
+    let demo_nop_10args_end_time = hardware_alarm.now();
+    
+    debug!("nop_slide: {} domain switches, started at {:?}, ended at {:?}", NOP_SLIDE_ITERS, nop_slide_start_time.into_u64(), nop_slide_end_time.into_u64());
+    debug!("demo_nop: {} domain switches, started at {:?}, ended at {:?}", DEMO_NOP_ITERS, demo_nop_start_time.into_u64(), demo_nop_end_time.into_u64());
+    debug!("demo_nop_10args: {} domain switches, started at {:?}, ended at {:?}", DEMO_NOP_10ARG_ITERS, demo_nop_10args_start_time.into_u64(), demo_nop_10args_end_time.into_u64());
+
+
+    // ----------- Microbenchmarks
 
     (board_kernel, earlgrey, chip, peripherals)
 }
