@@ -42,6 +42,13 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "demo_nop",
+    srcs = [
+        "src/demo_nop.c",
+    ],
+)
+
 rust_bindgen(
     name = "otcrypto_mac_bindings_rs",
     cc_lib = ":otcrypto_mac_hdrs",
@@ -87,6 +94,7 @@ rust_binary(
     deps = [
         ":layout",
         ":nostartfiles",
+	":demo_nop",
 	"//sw/device/lib/crypto/drivers:hmac",
 	"//sw/device/lib/crypto/impl:mac",
 	"@tock//encapfn/encapfn",

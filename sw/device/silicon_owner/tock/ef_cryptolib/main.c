@@ -164,6 +164,36 @@ void demo_nop(void) {
 	return;
 }
 
+void demo_nop_3args(
+	size_t a0,
+	size_t a1,
+	size_t a2
+) {
+	return;
+}
+
+void demo_nop_5args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4
+) {
+	return;
+}
+
+void demo_nop_7args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4,
+	size_t a5,
+	size_t a6
+) {
+	return;
+}
+
 void demo_nop_10args(
 	size_t a0,
 	size_t a1,
@@ -178,20 +208,234 @@ void demo_nop_10args(
 ) {
 	return;
 }
+
+
+void demo_nop_25args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4,
+	size_t a5,
+	size_t a6,
+	size_t a7,
+	size_t s0,
+	size_t s1,
+
+	size_t s2,
+	size_t s3,
+	size_t s4,
+	size_t s5,
+	size_t s6,
+	size_t s7,
+	size_t s8,
+	size_t s9,
+	
+	size_t s10,
+	size_t s11,
+	size_t s12,
+	size_t s13,
+	size_t s14,
+	size_t s15,
+	size_t s16
+) {
+	return;
+}
+
+void demo_nop_50args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4,
+	size_t a5,
+	size_t a6,
+	size_t a7,
+	size_t s0,
+	size_t s1,
+
+	size_t s2,
+	size_t s3,
+	size_t s4,
+	size_t s5,
+	size_t s6,
+	size_t s7,
+	size_t s8,
+	size_t s9,
+	
+	size_t s10,
+	size_t s11,
+	size_t s12,
+	size_t s13,
+	size_t s14,
+	size_t s15,
+	size_t s16,
+	size_t s17,
+	size_t s18,
+	size_t s19,
+
+	size_t s20,
+	size_t s21,
+	size_t s22,
+	size_t s23,
+	size_t s24,
+	size_t s25,
+	size_t s26,
+	size_t s27,
+	size_t s28,
+	size_t s29,
+
+	size_t s30,
+	size_t s31,
+	size_t s32,
+	size_t s33,
+	size_t s34,
+	size_t s35,
+	size_t s36,
+	size_t s37,
+	size_t s38,
+	size_t s39,
+
+	size_t s40,
+	size_t s41
+) {
+	return;
+}
+
+void demo_nop_100args(
+	size_t a0,
+	size_t a1,
+	size_t a2,
+	size_t a3,
+	size_t a4,
+	size_t a5,
+	size_t a6,
+	size_t a7,
+	size_t s0,
+	size_t s1,
+
+	size_t s2,
+	size_t s3,
+	size_t s4,
+	size_t s5,
+	size_t s6,
+	size_t s7,
+	size_t s8,
+	size_t s9,
+
+	size_t s10,
+	size_t s11,
+	size_t s12,
+	size_t s13,
+	size_t s14,
+	size_t s15,
+	size_t s16,
+	size_t s17,
+	size_t s18,
+	size_t s19,
+
+	size_t s20,
+	size_t s21,
+	size_t s22,
+	size_t s23,
+	size_t s24,
+	size_t s25,
+	size_t s26,
+	size_t s27,
+	size_t s28,
+	size_t s29,
+
+	size_t s30,
+	size_t s31,
+	size_t s32,
+	size_t s33,
+	size_t s34,
+	size_t s35,
+	size_t s36,
+	size_t s37,
+	size_t s38,
+	size_t s39,
+
+	size_t s40,
+	size_t s41,
+	size_t s42,
+	size_t s43,
+	size_t s44,
+	size_t s45,
+	size_t s46,
+	size_t s47,
+	size_t s48,
+	size_t s49,
+
+	size_t s50,
+	size_t s51,
+	size_t s52,
+	size_t s53,
+	size_t s54,
+	size_t s55,
+	size_t s56,
+	size_t s57,
+	size_t s58,
+	size_t s59,
+
+	size_t s60,
+	size_t s61,
+	size_t s62,
+	size_t s63,
+	size_t s64,
+	size_t s65,
+	size_t s66,
+	size_t s67,
+	size_t s68,
+	size_t s69,
+
+	size_t s70,
+	size_t s71,
+	size_t s72,
+	size_t s73,
+	size_t s74,
+	size_t s75,
+	size_t s76,
+	size_t s77,
+	size_t s78,
+	size_t s79,
+
+	size_t s80,
+	size_t s81,
+	size_t s82,
+	size_t s83,
+	size_t s84,
+	size_t s85,
+	size_t s86,
+	size_t s87,
+	size_t s88,
+	size_t s89,
+
+	size_t s90,
+	size_t s91
+) {
+	return;
+}
   
 typedef void (*fnptr)(void);
 
 fnptr const
 __attribute__ ((section (".encapfn_hdr")))
-encapfn_fntab[8] = {
+encapfn_fntab[14] = {
   (fnptr) keyblob_num_words,         
   (fnptr) keyblob_from_key_and_mask, 
   (fnptr) integrity_blinded_checksum,
   (fnptr) otcrypto_hmac_init,        
   (fnptr) otcrypto_hmac_update,      
   (fnptr) otcrypto_hmac_final,       
-  (fnptr) demo_nop,       
+  (fnptr) demo_nop,
+  (fnptr) demo_nop_3args,
+  (fnptr) demo_nop_5args,
+  (fnptr) demo_nop_7args,  
   (fnptr) demo_nop_10args,       
+  (fnptr) demo_nop_25args,       
+  (fnptr) demo_nop_50args,       
+  (fnptr) demo_nop_100args,       
 };
 
 __attribute__ ((section (".encapfn_hdr")))

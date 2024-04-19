@@ -2,6 +2,31 @@
 
 extern "C" {
     pub fn demo_nop() -> ::core::ffi::c_void;
+    
+    pub fn demo_nop_3args(
+        a0: usize,
+        a1: usize,
+        a2: usize,
+    ) -> ::core::ffi::c_void;
+    
+    pub fn demo_nop_5args(
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+    ) -> ::core::ffi::c_void;
+
+    pub fn demo_nop_7args(
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+    ) -> ::core::ffi::c_void;
+
     pub fn demo_nop_10args(
         a0: usize,
         a1: usize,
@@ -14,6 +39,95 @@ extern "C" {
         s0: usize,
         s1: usize,
     ) -> ::core::ffi::c_void;
+
+    pub fn demo_nop_25args(
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+    ) -> ::core::ffi::c_void;
+
+    pub fn demo_nop_50args(
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+    ) -> ::core::ffi::c_void;
+
     pub fn demo_nop_100args(
         a0: usize,
         a1: usize,
@@ -176,6 +290,37 @@ pub trait LibOTCryptoMAC<
         &self,
         access_scope: &mut ::encapfn::types::AccessScope<ID>,
     ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+
+    fn demo_nop_3args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+    
+    fn demo_nop_5args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+    
+    fn demo_nop_7args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+    
     fn demo_nop_10args(
         &self,
         a0: usize,
@@ -190,6 +335,99 @@ pub trait LibOTCryptoMAC<
         s1: usize,
         access_scope: &mut ::encapfn::types::AccessScope<ID>,
     ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+
+    fn demo_nop_25args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+ 
+    fn demo_nop_50args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void>;
+
     fn demo_nop_100args(
         &self,
         a0: usize,
@@ -202,10 +440,110 @@ pub trait LibOTCryptoMAC<
         a7: usize,
         s0: usize,
         s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        s42: usize,
+        s43: usize,
+        s44: usize,
+        s45: usize,
+        s46: usize,
+        s47: usize,
+        s48: usize,
+        s49: usize,
+
+        s50: usize,
+        s51: usize,
+        s52: usize,
+        s53: usize,
+        s54: usize,
+        s55: usize,
+        s56: usize,
+        s57: usize,
+        s58: usize,
+        s59: usize,
+
+        s60: usize,
+        s61: usize,
+        s62: usize,
+        s63: usize,
+        s64: usize,
+        s65: usize,
+        s66: usize,
+        s67: usize,
+        s68: usize,
+        s69: usize,
+
+        s70: usize,
+        s71: usize,
+        s72: usize,
+        s73: usize,
+        s74: usize,
+        s75: usize,
+        s76: usize,
+        s77: usize,
+        s78: usize,
+        s79: usize,
+
+        s80: usize,
+        s81: usize,
+        s82: usize,
+        s83: usize,
+        s84: usize,
+        s85: usize,
+        s86: usize,
+        s87: usize,
+        s88: usize,
+        s89: usize,
+
+        s90: usize,
+        s91: usize,
         access_scope: &mut ::encapfn::types::AccessScope<ID>,
     ) -> ::encapfn::EFResult<::core::ffi::c_void>;
 }
-pub const LibOTCryptoMACFntab: [&'static ::core::ffi::CStr; 8usize] = [
+pub const LibOTCryptoMACFntab: [&'static ::core::ffi::CStr; 14usize] = [
     c"keyblob_num_words",
     c"keyblob_from_key_and_mask",
     c"otcrypto_hmac_update",
@@ -213,9 +551,15 @@ pub const LibOTCryptoMACFntab: [&'static ::core::ffi::CStr; 8usize] = [
     c"otcrypto_hmac_final",
     c"integrity_blinded_checksum",
     c"demo_nop",
+    c"demo_nop_3args",
+    c"demo_nop_5args",
+    c"demo_nop_7args",
     c"demo_nop_10args",
+    c"demo_nop_25args",
+    c"demon_nop_50args",
+    c"demo_nop_100args",
 ];
-pub const LibOTCryptoMACFixedFntab: [Option<&'static ::core::ffi::CStr>; 8usize] = [
+pub const LibOTCryptoMACFixedFntab: [Option<&'static ::core::ffi::CStr>; 14usize] = [
     Some(c"keyblob_num_words"),
     Some(c"keyblob_from_key_and_mask"),
     Some(c"integrity_blinded_checksum"),
@@ -223,11 +567,17 @@ pub const LibOTCryptoMACFixedFntab: [Option<&'static ::core::ffi::CStr>; 8usize]
     Some(c"otcrypto_hmac_update"),
     Some(c"otcrypto_hmac_final"),
     Some(c"demo_nop"),
+    Some(c"demo_nop_3args"),
+    Some(c"demo_nop_5args"),
+    Some(c"demo_nop_7args"),
     Some(c"demo_nop_10args"),
+    Some(c"demo_nop_25args"),
+    Some(c"demon_nop_50args"),
+    Some(c"demo_nop_100args"),
 ];
 pub struct LibOTCryptoMACRt<'a, ID: ::encapfn::branding::EFID, RT: ::encapfn::rt::EncapfnRt> {
     rt: &'a RT,
-    symbols: RT::SymbolTableState<8usize, 8usize>,
+    symbols: RT::SymbolTableState<14usize, 14usize>,
     _id: ::core::marker::PhantomData<ID>,
 }
 impl<'a, ID: ::encapfn::branding::EFID, RT: ::encapfn::rt::EncapfnRt> LibOTCryptoMACRt<'a, ID, RT> {
@@ -319,6 +669,67 @@ impl<ID: ::encapfn::branding::EFID>
             self::demo_nop()
         }))
     }
+    
+    fn demo_nop_3args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
+            self::demo_nop_3args(
+                a0,
+                a1,
+                a2,
+            )
+        }))
+    }
+    
+    fn demo_nop_5args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
+            self::demo_nop_5args(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+            )
+        }))
+    }
+    
+    fn demo_nop_7args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
+            self::demo_nop_7args(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+            )
+        }))
+    }
+    
     fn demo_nop_10args(
         &self,
         a0: usize,
@@ -348,6 +759,191 @@ impl<ID: ::encapfn::branding::EFID>
             )
         }))
     }
+
+    fn demo_nop_25args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
+            self::demo_nop_25args(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                a7,
+                s0,
+                s1,
+
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+            )
+        }))
+    }
+    
+    fn demo_nop_50args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
+            self::demo_nop_50args(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                a7,
+                s0,
+                s1,
+        
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+                s17,
+                s18,
+                s19,
+
+                s20,
+                s21,
+                s22,
+                s23,
+                s24,
+                s25,
+                s26,
+                s27,
+                s28,
+                s29,
+
+                s30,
+                s31,
+                s32,
+                s33,
+                s34,
+                s35,
+                s36,
+                s37,
+                s38,
+                s39,
+
+                s40,
+                s41,
+            )
+        }))
+    }
+
     fn demo_nop_100args(
         &self,
         a0: usize,
@@ -360,10 +956,110 @@ impl<ID: ::encapfn::branding::EFID>
         a7: usize,
         s0: usize,
         s1: usize,
+
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        s42: usize,
+        s43: usize,
+        s44: usize,
+        s45: usize,
+        s46: usize,
+        s47: usize,
+        s48: usize,
+        s49: usize,
+
+        s50: usize,
+        s51: usize,
+        s52: usize,
+        s53: usize,
+        s54: usize,
+        s55: usize,
+        s56: usize,
+        s57: usize,
+        s58: usize,
+        s59: usize,
+
+        s60: usize,
+        s61: usize,
+        s62: usize,
+        s63: usize,
+        s64: usize,
+        s65: usize,
+        s66: usize,
+        s67: usize,
+        s68: usize,
+        s69: usize,
+
+        s70: usize,
+        s71: usize,
+        s72: usize,
+        s73: usize,
+        s74: usize,
+        s75: usize,
+        s76: usize,
+        s77: usize,
+        s78: usize,
+        s79: usize,
+
+        s80: usize,
+        s81: usize,
+        s82: usize,
+        s83: usize,
+        s84: usize,
+        s85: usize,
+        s86: usize,
+        s87: usize,
+        s88: usize,
+        s89: usize,
+
+        s90: usize,
+        s91: usize,
         _access_scope: &mut ::encapfn::types::AccessScope<ID>,
     ) -> ::encapfn::EFResult<::core::ffi::c_void> {
         ::encapfn::EFResult::Ok(::encapfn::types::EFCopy::new(unsafe {
-            self::demo_nop_10args(
+            self::demo_nop_100args(
                 a0,
                 a1,
                 a2,
@@ -374,6 +1070,105 @@ impl<ID: ::encapfn::branding::EFID>
                 a7,
                 s0,
                 s1,
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+                s17,
+                s18,
+                s19,
+
+                s20,
+                s21,
+                s22,
+                s23,
+                s24,
+                s25,
+                s26,
+                s27,
+                s28,
+                s29,
+
+                s30,
+                s31,
+                s32,
+                s33,
+                s34,
+                s35,
+                s36,
+                s37,
+                s38,
+                s39,
+
+                s40,
+                s41,
+                s42,
+                s43,
+                s44,
+                s45,
+                s46,
+                s47,
+                s48,
+                s49,
+
+                s50,
+                s51,
+                s52,
+                s53,
+                s54,
+                s55,
+                s56,
+                s57,
+                s58,
+                s59,
+
+                s60,
+                s61,
+                s62,
+                s63,
+                s64,
+                s65,
+                s66,
+                s67,
+                s68,
+                s69,
+
+                s70,
+                s71,
+                s72,
+                s73,
+                s74,
+                s75,
+                s76,
+                s77,
+                s78,
+                s79,
+
+                s80,
+                s81,
+                s82,
+                s83,
+                s84,
+                s85,
+                s86,
+                s87,
+                s88,
+                s89,
+
+                s90,
+                s91,
             )
         }))
     }
@@ -386,6 +1181,27 @@ trait LibOTCryptoMACRv32iCRt:
     > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         8usize,
         ::encapfn::abi::calling_convention::Stacked<8, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        68usize,
+        ::encapfn::abi::calling_convention::Stacked<68, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        168usize,
+        ::encapfn::abi::calling_convention::Stacked<168, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        368usize,
+        ::encapfn::abi::calling_convention::Stacked<368, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        0usize,
+        ::encapfn::abi::calling_convention::Stacked<0, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        0usize,
+        ::encapfn::abi::calling_convention::AREG7<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        0usize,
+        ::encapfn::abi::calling_convention::AREG6<::encapfn::abi::rv32i_c::Rv32iCABI>,
+    > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+        0usize,
+        ::encapfn::abi::calling_convention::AREG5<::encapfn::abi::rv32i_c::Rv32iCABI>,
     > + ::encapfn::rt::rv32i_c::Rv32iCRt<
         0usize,
         ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
@@ -412,6 +1228,27 @@ impl<
             > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 8usize,
                 ::encapfn::abi::calling_convention::Stacked<8, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                68usize,
+                ::encapfn::abi::calling_convention::Stacked<68, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                168usize,
+                ::encapfn::abi::calling_convention::Stacked<168, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                368usize,
+                ::encapfn::abi::calling_convention::Stacked<368, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::Stacked<0, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG7<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG6<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            > + ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG5<::encapfn::abi::rv32i_c::Rv32iCABI>,
             > + ::encapfn::rt::rv32i_c::Rv32iCRt<
                 0usize,
                 ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
@@ -670,7 +1507,184 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
             self.rt(),
         )
     }
-    
+
+    #[inline]
+    fn demo_nop_3args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        #[naked]
+        unsafe extern "C" fn demo_nop_3args_int<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG3<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            >,
+        >(
+            a0: usize,
+            a1: usize,
+            a2: usize,
+            _rt: &RT,
+            _fnptr: *const (),
+            _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
+        ) {
+            core::arch::asm!(
+                "la t0, {invoke}",
+                "li t6, 7",
+                "jr t0",
+                invoke = sym RT::invoke,
+                options(noreturn),
+            );
+        }
+
+        let ef_sym = self.rt().lookup_symbol(7usize, &self.symbols).unwrap();
+
+        let mut ef_res = <
+            <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
+            as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, ::core::ffi::c_void>
+        >::new();
+        let ef_res_borrowed = &mut ef_res;
+
+        self.rt().execute(move || unsafe {
+            demo_nop_3args_int::<RT>(
+                a0,
+                a1,
+                a2,
+                self.rt(), ef_sym, ef_res_borrowed);
+        });
+
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, ::core::ffi::c_void>::into_result_registers(
+            ef_res,
+            self.rt(),
+        )
+    }
+
+    #[inline]
+    fn demo_nop_5args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        #[naked]
+        unsafe extern "C" fn demo_nop_5args_int<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG5<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            >,
+        >(
+            a0: usize,
+            a1: usize,
+            a2: usize,
+            a3: usize,
+            a4: usize,
+            _rt: &RT,
+            _fnptr: *const (),
+            _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
+        ) {
+            core::arch::asm!(
+                "la t0, {invoke}",
+                "li t6, 8",
+                "jr t0",
+                invoke = sym RT::invoke,
+                options(noreturn),
+            );
+        }
+
+        let ef_sym = self.rt().lookup_symbol(8usize, &self.symbols).unwrap();
+
+        let mut ef_res = <
+            <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
+            as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, ::core::ffi::c_void>
+        >::new();
+        let ef_res_borrowed = &mut ef_res;
+
+        self.rt().execute(move || unsafe {
+            demo_nop_5args_int::<RT>(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                self.rt(), ef_sym, ef_res_borrowed);
+        });
+
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, ::core::ffi::c_void>::into_result_registers(
+            ef_res,
+            self.rt(),
+        )
+    }
+
+    #[inline]
+    fn demo_nop_7args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        #[naked]
+        unsafe extern "C" fn demo_nop_7args_int<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
+                0usize,
+                ::encapfn::abi::calling_convention::AREG7<::encapfn::abi::rv32i_c::Rv32iCABI>,
+            >,
+        >(
+            a0: usize,
+            a1: usize,
+            a2: usize,
+            a3: usize,
+            a4: usize,
+            a5: usize,
+            a6: usize,
+            _rt: &RT,
+            _fnptr: *const (),
+            _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
+        ) {
+            core::arch::asm!(
+                "la t0, {invoke}",
+                "li t6, 9",
+                "jr t0",
+                invoke = sym RT::invoke,
+                options(noreturn),
+            );
+        }
+
+        let ef_sym = self.rt().lookup_symbol(9usize, &self.symbols).unwrap();
+
+        let mut ef_res = <
+            <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
+            as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, ::core::ffi::c_void>
+        >::new();
+        let ef_res_borrowed = &mut ef_res;
+
+        self.rt().execute(move || unsafe {
+            demo_nop_7args_int::<RT>(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                self.rt(), ef_sym, ef_res_borrowed);
+        });
+
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, ::core::ffi::c_void>::into_result_registers(
+            ef_res,
+            self.rt(),
+        )
+    }
+
     #[inline]
     fn demo_nop_10args(
         &self,
@@ -709,14 +1723,14 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
         ) {
             core::arch::asm!(
                 "la t0, {invoke}",
-                "li t6, 7",
+                "li t6, 10",
                 "jr t0",
                 invoke = sym RT::invoke,
                 options(noreturn),
             );
         }
 
-        let ef_sym = self.rt().lookup_symbol(7usize, &self.symbols).unwrap();
+        let ef_sym = self.rt().lookup_symbol(10usize, &self.symbols).unwrap();
 
         let mut ef_res = <
             <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
@@ -744,8 +1758,9 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
             self.rt(),
         )
     }
+   
     #[inline]
-    fn demo_nop_10args(
+    fn demo_nop_25args(
         &self,
         a0: usize,
         a1: usize,
@@ -757,13 +1772,30 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
         a7: usize,
         s0: usize,
         s1: usize,
+        
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
         _access_scope: &mut ::encapfn::types::AccessScope<ID>,
     ) -> ::encapfn::EFResult<::core::ffi::c_void> {
         #[naked]
-        unsafe extern "C" fn demo_nop_10args_int<
+        unsafe extern "C" fn demo_nop_25args_int<
             RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
-                8usize,
-                ::encapfn::abi::calling_convention::Stacked<8, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            { (25 - 8) * 4 },
+                ::encapfn::abi::calling_convention::Stacked<{ (25 - 8) * 4 }, ::encapfn::abi::rv32i_c::Rv32iCABI>,
             >,
         >(
             a0: usize,
@@ -776,20 +1808,37 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
             a7: usize,
             s0: usize,
             s1: usize,
+
+            s2: usize,
+            s3: usize,
+            s4: usize,
+            s5: usize,
+            s6: usize,
+            s7: usize,
+            s8: usize,
+            s9: usize,
+            
+            s10: usize,
+            s11: usize,
+            s12: usize,
+            s13: usize,
+            s14: usize,
+            s15: usize,
+            s16: usize,
             _rt: &RT,
             _fnptr: *const (),
             _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
         ) {
             core::arch::asm!(
                 "la t0, {invoke}",
-                "li t6, 7",
+                "li t6, 11",
                 "jr t0",
                 invoke = sym RT::invoke,
                 options(noreturn),
             );
         }
 
-        let ef_sym = self.rt().lookup_symbol(7usize, &self.symbols).unwrap();
+        let ef_sym = self.rt().lookup_symbol(11usize, &self.symbols).unwrap();
 
         let mut ef_res = <
             <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
@@ -798,7 +1847,7 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
         let ef_res_borrowed = &mut ef_res;
 
         self.rt().execute(move || unsafe {
-            demo_nop_10args_int::<RT>(
+            demo_nop_25args_int::<RT>(
                 a0,
                 a1,
                 a2,
@@ -809,6 +1858,607 @@ impl<ID: ::encapfn::branding::EFID, RT: LibOTCryptoMACRv32iCRt<ID = ID>>
                 a7,
                 s0,
                 s1,
+
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+                self.rt(), ef_sym, ef_res_borrowed);
+        });
+    
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, ::core::ffi::c_void>::into_result_registers(
+            ef_res,
+            self.rt(),
+        )
+    }
+
+    #[inline]
+    fn demo_nop_50args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+        
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        #[naked]
+        unsafe extern "C" fn demo_nop_50args_int<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
+            { (50 - 8) * 4 },
+                ::encapfn::abi::calling_convention::Stacked<{ (50 - 8) * 4 }, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            >,
+        >(
+            a0: usize,
+            a1: usize,
+            a2: usize,
+            a3: usize,
+            a4: usize,
+            a5: usize,
+            a6: usize,
+            a7: usize,
+            s0: usize,
+            s1: usize,
+
+            s2: usize,
+            s3: usize,
+            s4: usize,
+            s5: usize,
+            s6: usize,
+            s7: usize,
+            s8: usize,
+            s9: usize,
+            
+            s10: usize,
+            s11: usize,
+            s12: usize,
+            s13: usize,
+            s14: usize,
+            s15: usize,
+            s16: usize,
+            s17: usize,
+            s18: usize,
+            s19: usize,
+
+            s20: usize,
+            s21: usize,
+            s22: usize,
+            s23: usize,
+            s24: usize,
+            s25: usize,
+            s26: usize,
+            s27: usize,
+            s28: usize,
+            s29: usize,
+
+            s30: usize,
+            s31: usize,
+            s32: usize,
+            s33: usize,
+            s34: usize,
+            s35: usize,
+            s36: usize,
+            s37: usize,
+            s38: usize,
+            s39: usize,
+
+            s40: usize,
+            s41: usize,
+            _rt: &RT,
+            _fnptr: *const (),
+            _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
+        ) {
+            core::arch::asm!(
+                "la t0, {invoke}",
+                "li t6, 12", 
+                "jr t0",
+                invoke = sym RT::invoke,
+                options(noreturn),
+            );
+        }
+
+        let ef_sym = self.rt().lookup_symbol(12usize, &self.symbols).unwrap();
+
+        let mut ef_res = <
+            <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
+            as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, ::core::ffi::c_void>
+        >::new();
+        let ef_res_borrowed = &mut ef_res;
+
+        self.rt().execute(move || unsafe {
+            demo_nop_50args_int::<RT>(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                a7,
+                s0,
+                s1,
+
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+                s17,
+                s18,
+                s19,
+
+                s20,
+                s21,
+                s22,
+                s23,
+                s24,
+                s25,
+                s26,
+                s27,
+                s28,
+                s29,
+
+                s30,
+                s31,
+                s32,
+                s33,
+                s34,
+                s35,
+                s36,
+                s37,
+                s38,
+                s39,
+
+                s40,
+                s41,
+                self.rt(), ef_sym, ef_res_borrowed);
+        });
+
+        ::encapfn::rt::rv32i_c::Rv32iCInvokeRes::<RT, ::core::ffi::c_void>::into_result_registers(
+            ef_res,
+            self.rt(),
+        )
+    }
+
+    #[inline]
+    fn demo_nop_100args(
+        &self,
+        a0: usize,
+        a1: usize,
+        a2: usize,
+        a3: usize,
+        a4: usize,
+        a5: usize,
+        a6: usize,
+        a7: usize,
+        s0: usize,
+        s1: usize,
+        
+        s2: usize,
+        s3: usize,
+        s4: usize,
+        s5: usize,
+        s6: usize,
+        s7: usize,
+        s8: usize,
+        s9: usize,
+        
+        s10: usize,
+        s11: usize,
+        s12: usize,
+        s13: usize,
+        s14: usize,
+        s15: usize,
+        s16: usize,
+        s17: usize,
+        s18: usize,
+        s19: usize,
+
+        s20: usize,
+        s21: usize,
+        s22: usize,
+        s23: usize,
+        s24: usize,
+        s25: usize,
+        s26: usize,
+        s27: usize,
+        s28: usize,
+        s29: usize,
+
+        s30: usize,
+        s31: usize,
+        s32: usize,
+        s33: usize,
+        s34: usize,
+        s35: usize,
+        s36: usize,
+        s37: usize,
+        s38: usize,
+        s39: usize,
+
+        s40: usize,
+        s41: usize,
+        s42: usize,
+        s43: usize,
+        s44: usize,
+        s45: usize,
+        s46: usize,
+        s47: usize,
+        s48: usize,
+        s49: usize,
+
+        s50: usize,
+        s51: usize,
+        s52: usize,
+        s53: usize,
+        s54: usize,
+        s55: usize,
+        s56: usize,
+        s57: usize,
+        s58: usize,
+        s59: usize,
+
+        s60: usize,
+        s61: usize,
+        s62: usize,
+        s63: usize,
+        s64: usize,
+        s65: usize,
+        s66: usize,
+        s67: usize,
+        s68: usize,
+        s69: usize,
+
+        s70: usize,
+        s71: usize,
+        s72: usize,
+        s73: usize,
+        s74: usize,
+        s75: usize,
+        s76: usize,
+        s77: usize,
+        s78: usize,
+        s79: usize,
+
+        s80: usize,
+        s81: usize,
+        s82: usize,
+        s83: usize,
+        s84: usize,
+        s85: usize,
+        s86: usize,
+        s87: usize,
+        s88: usize,
+        s89: usize,
+
+        s90: usize,
+        s91: usize,
+        _access_scope: &mut ::encapfn::types::AccessScope<ID>,
+    ) -> ::encapfn::EFResult<::core::ffi::c_void> {
+        #[naked]
+        unsafe extern "C" fn demo_nop_100args_int<
+            RT: ::encapfn::rt::rv32i_c::Rv32iCRt<
+            { (100 - 8) * 4 },
+                ::encapfn::abi::calling_convention::Stacked<{ (100 - 8) * 4 }, ::encapfn::abi::rv32i_c::Rv32iCABI>,
+            >,
+        >(
+            a0: usize,
+            a1: usize,
+            a2: usize,
+            a3: usize,
+            a4: usize,
+            a5: usize,
+            a6: usize,
+            a7: usize,
+            s0: usize,
+            s1: usize,
+
+            s2: usize,
+            s3: usize,
+            s4: usize,
+            s5: usize,
+            s6: usize,
+            s7: usize,
+            s8: usize,
+            s9: usize,
+            
+            s10: usize,
+            s11: usize,
+            s12: usize,
+            s13: usize,
+            s14: usize,
+            s15: usize,
+            s16: usize,
+            s17: usize,
+            s18: usize,
+            s19: usize,
+
+            s20: usize,
+            s21: usize,
+            s22: usize,
+            s23: usize,
+            s24: usize,
+            s25: usize,
+            s26: usize,
+            s27: usize,
+            s28: usize,
+            s29: usize,
+
+            s30: usize,
+            s31: usize,
+            s32: usize,
+            s33: usize,
+            s34: usize,
+            s35: usize,
+            s36: usize,
+            s37: usize,
+            s38: usize,
+            s39: usize,
+
+            s40: usize,
+            s41: usize,
+            s42: usize,
+            s43: usize,
+            s44: usize,
+            s45: usize,
+            s46: usize,
+            s47: usize,
+            s48: usize,
+            s49: usize,
+
+            s50: usize,
+            s51: usize,
+            s52: usize,
+            s53: usize,
+            s54: usize,
+            s55: usize,
+            s56: usize,
+            s57: usize,
+            s58: usize,
+            s59: usize,
+
+            s60: usize,
+            s61: usize,
+            s62: usize,
+            s63: usize,
+            s64: usize,
+            s65: usize,
+            s66: usize,
+            s67: usize,
+            s68: usize,
+            s69: usize,
+
+            s70: usize,
+            s71: usize,
+            s72: usize,
+            s73: usize,
+            s74: usize,
+            s75: usize,
+            s76: usize,
+            s77: usize,
+            s78: usize,
+            s79: usize,
+
+            s80: usize,
+            s81: usize,
+            s82: usize,
+            s83: usize,
+            s84: usize,
+            s85: usize,
+            s86: usize,
+            s87: usize,
+            s88: usize,
+            s89: usize,
+
+            s90: usize,
+            s91: usize,
+            _rt: &RT,
+            _fnptr: *const (),
+            _resptr: &mut RT::InvokeRes<::core::ffi::c_void>,
+        ) {
+            core::arch::asm!(
+                "la t0, {invoke}",
+                "li t6, 13",
+                "jr t0",
+                invoke = sym RT::invoke,
+                options(noreturn),
+            );
+        }
+
+        let ef_sym = self.rt().lookup_symbol(13usize, &self.symbols).unwrap();
+
+        let mut ef_res = <
+            <RT as ::encapfn::rt::rv32i_c::Rv32iCBaseRt>::InvokeRes<::core::ffi::c_void>
+            as ::encapfn::rt::rv32i_c::Rv32iCInvokeRes<RT, ::core::ffi::c_void>
+        >::new();
+        let ef_res_borrowed = &mut ef_res;
+
+        self.rt().execute(move || unsafe {
+            demo_nop_100args_int::<RT>(
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                a7,
+                s0,
+                s1,
+
+                s2,
+                s3,
+                s4,
+                s5,
+                s6,
+                s7,
+                s8,
+                s9,
+                
+                s10,
+                s11,
+                s12,
+                s13,
+                s14,
+                s15,
+                s16,
+                s17,
+                s18,
+                s19,
+
+                s20,
+                s21,
+                s22,
+                s23,
+                s24,
+                s25,
+                s26,
+                s27,
+                s28,
+                s29,
+
+                s30,
+                s31,
+                s32,
+                s33,
+                s34,
+                s35,
+                s36,
+                s37,
+                s38,
+                s39,
+
+                s40,
+                s41,
+                s42,
+                s43,
+                s44,
+                s45,
+                s46,
+                s47,
+                s48,
+                s49,
+
+                s50,
+                s51,
+                s52,
+                s53,
+                s54,
+                s55,
+                s56,
+                s57,
+                s58,
+                s59,
+
+                s60,
+                s61,
+                s62,
+                s63,
+                s64,
+                s65,
+                s66,
+                s67,
+                s68,
+                s69,
+
+                s70,
+                s71,
+                s72,
+                s73,
+                s74,
+                s75,
+                s76,
+                s77,
+                s78,
+                s79,
+
+                s80,
+                s81,
+                s82,
+                s83,
+                s84,
+                s85,
+                s86,
+                s87,
+                s88,
+                s89,
+
+                s90,
+                s91,
+
                 self.rt(), ef_sym, ef_res_borrowed);
         });
 
